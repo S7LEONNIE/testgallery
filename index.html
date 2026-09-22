@@ -1,160 +1,431 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dynamic Photo Gallery</title>
+
+    <title>NFC Shared Gallery</title>
+
     <style>
-        /* 🎨 THEME COLORS: Soft matte charcoal and slate gray tones */
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
-            background-color: #121212; 
-            color: #E0E0E0; 
-            margin: 0; 
-            padding: 16px; 
-            text-align: center; 
+        /* =========================================================
+           🎨 BASE THEME
+        ========================================================= */
+
+        * {
+            box-sizing: border-box;
         }
-        h1 { 
-            margin-bottom: 24px; 
-            font-weight: 300; 
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+                         Roboto, sans-serif;
+
+            background: #121212;
+            color: #E0E0E0;
+
+            padding: 16px;
+            text-align: center;
+
+            overflow-x: hidden;
+        }
+
+        h1 {
+            margin: 8px 0 24px;
+
+            font-weight: 300;
             letter-spacing: 1px;
+
             color: #FFFFFF;
         }
 
-        /* 📐 GRID SYSTEM: Strict 3 items per row on mobile screens */
-        .gallery-grid { 
-            display: grid; 
-            grid-template-columns: repeat(3, 1fr); 
-            gap: 8px; 
-            max-width: 100%; 
-            margin: 0 auto; 
-        }
-        .gallery-grid img { 
-            width: 100%; 
-            aspect-ratio: 1; 
-            object-fit: cover; 
-            border-radius: 6px; 
-            cursor: pointer; 
-            background-color: #1E1E1E; 
-            
-            opacity: 0;
-            transform: translateY(10px);
-            animation: fadeInUp 0.4s ease forwards;
-            transition: opacity 0.2s ease, transform 0.2s ease;
-        }
-        
-        .gallery-grid img:active { 
-            transform: scale(0.96); 
+
+        /* =========================================================
+           📸 RESPONSIVE PHOTO GRID
+        ========================================================= */
+
+        .gallery-grid {
+            display: grid;
+
+            /* Mobile default */
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+
+            gap: 8px;
+
+            width: 100%;
+            max-width: 1600px;
+
+            margin: 0 auto;
         }
 
-        /* 📸 LIGHTBOX OVERLAY: Fullscreen pop-up styling */
-        .lightbox { 
-            display: none; 
-            position: fixed; 
-            z-index: 999; 
-            top: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 100%; 
-            background: rgba(10, 10, 10, 0.95); 
-            justify-content: center; 
-            align-items: center; 
+        .gallery-grid img {
+            display: block;
+
+            width: 100%;
+            aspect-ratio: 1 / 1;
+
+            object-fit: cover;
+
+            border-radius: 6px;
+
             cursor: pointer;
+
+            background: #1E1E1E;
+
             opacity: 0;
-            transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateY(12px) scale(0.98);
+
+            animation: galleryFadeIn 0.45s ease forwards;
+
+            transition:
+                transform 0.2s ease,
+                filter 0.2s ease;
         }
-        .lightbox.active {
+
+        /* Slight interaction when tapping a thumbnail */
+
+        .gallery-grid img:active {
+            transform: scale(0.94);
+        }
+
+        .gallery-grid img:hover {
+            filter: brightness(1.08);
+        }
+
+
+        /* =========================================================
+           📱 TABLET
+        ========================================================= */
+
+        @media (min-width: 600px) {
+            .gallery-grid {
+                grid-template-columns: repeat(4, minmax(0, 1fr));
+                gap: 10px;
+            }
+        }
+
+
+        /* =========================================================
+           💻 DESKTOP
+        ========================================================= */
+
+        @media (min-width: 900px) {
+            body {
+                padding: 24px;
+            }
+
+            .gallery-grid {
+                grid-template-columns: repeat(5, minmax(0, 1fr));
+                gap: 12px;
+            }
+        }
+
+
+        /* =========================================================
+           🖥️ LARGE DESKTOP
+        ========================================================= */
+
+        @media (min-width: 1300px) {
+            .gallery-grid {
+                grid-template-columns: repeat(6, minmax(0, 1fr));
+            }
+        }
+
+
+        /* =========================================================
+           ✨ THUMBNAIL ENTRANCE ANIMATION
+        ========================================================= */
+
+        @keyframes galleryFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(12px) scale(0.97);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+
+        /* =========================================================
+           📸 LIGHTBOX
+        ========================================================= */
+
+        .lightbox {
+            position: fixed;
+
+            inset: 0;
+
+            z-index: 9999;
+
             display: flex;
+
+            justify-content: center;
+            align-items: center;
+
+            padding: 24px;
+
+            background: rgba(8, 8, 8, 0.94);
+
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+
+            cursor: zoom-out;
+
+            opacity: 0;
+            visibility: hidden;
+
+            transition:
+                opacity 0.35s ease,
+                visibility 0.35s ease;
+        }
+
+
+        /* =========================================================
+           🖼️ LIGHTBOX IMAGE
+        ========================================================= */
+
+        .lightbox img {
+            display: block;
+
+            max-width: 94vw;
+            max-height: 88vh;
+
+            width: auto;
+            height: auto;
+
+            object-fit: contain;
+
+            border-radius: 8px;
+
+            box-shadow:
+                0 20px 70px rgba(0, 0, 0, 0.65);
+
+            cursor: default;
+
+            /* Starting state */
+            opacity: 0;
+
+            transform:
+                scale(0.72)
+                translateY(20px);
+
+            transition:
+                transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+                opacity 0.3s ease;
+        }
+
+
+        /* =========================================================
+           ✨ ACTIVE LIGHTBOX ANIMATION
+        ========================================================= */
+
+        .lightbox.active {
             opacity: 1;
+            visibility: visible;
         }
-        
-        .lightbox img { 
-            max-width: 92%; 
-            max-height: 85vh; 
-            border-radius: 6px; 
-            object-fit: contain; 
-            transform: scale(0.85);
-            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); 
-        }
+
         .lightbox.active img {
+            opacity: 1;
+
+            transform:
+                scale(1)
+                translateY(0);
+        }
+
+
+        /* =========================================================
+           ❌ CLOSE HINT
+        ========================================================= */
+
+        .lightbox::after {
+            content: "✕";
+
+            position: absolute;
+
+            top: 20px;
+            right: 24px;
+
+            width: 40px;
+            height: 40px;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 50%;
+
+            background: rgba(255, 255, 255, 0.08);
+
+            color: rgba(255, 255, 255, 0.85);
+
+            font-size: 20px;
+            font-weight: 300;
+
+            pointer-events: none;
+
+            opacity: 0;
+
+            transform: scale(0.8);
+
+            transition:
+                opacity 0.3s ease 0.15s,
+                transform 0.3s ease 0.15s;
+        }
+
+        .lightbox.active::after {
+            opacity: 1;
             transform: scale(1);
         }
 
-        @keyframes fadeInUp {
-            to {
-                opacity: 1;
-                transform: translateY(0);
+
+        /* =========================================================
+           ⚠️ ERROR MESSAGE
+        ========================================================= */
+
+        .error {
+            grid-column: 1 / -1;
+
+            color: #999;
+
+            padding: 40px 20px;
+        }
+
+
+        /* =========================================================
+           📱 MOBILE LIGHTBOX
+        ========================================================= */
+
+        @media (max-width: 600px) {
+
+            .lightbox {
+                padding: 12px;
+            }
+
+            .lightbox img {
+                max-width: 96vw;
+                max-height: 84vh;
+
+                border-radius: 6px;
+            }
+
+            .lightbox::after {
+                top: 14px;
+                right: 14px;
+            }
+        }
+
+
+        /* =========================================================
+           ♿ REDUCE MOTION
+        ========================================================= */
+
+        @media (prefers-reduced-motion: reduce) {
+
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
             }
         }
     </style>
 </head>
+
+
 <body>
 
     <h1>NFC Shared Gallery</h1>
 
-    <div class="gallery-grid" id="photoGrid"></div>
-
-    <!-- 📸 Lightbox Overlay Element -->
-    <div id="lightbox" class="lightbox">
-        <img id="lightboxImg" src="" alt="Enlarged view">
+    <div
+        class="gallery-grid"
+        id="photoGrid">
     </div>
 
+
+    <!-- =========================================================
+         📸 LIGHTBOX
+    ========================================================= -->
+
+    <div
+        id="lightbox"
+        class="lightbox"
+        aria-hidden="true">
+
+        <img
+            id="lightboxImg"
+            src=""
+            alt="Enlarged view">
+    </div>
+
+
     <script>
-        // 🛠️ CONFIGURATION: Adjusted to your successful repository settings
-        const username = "S7LEONNIE"; 
-        const repoName = "testgallery"; 
-        const folderPath = "images/client1"; // Change to "images/clientname" when scaling for multiple clients
 
-        const grid = document.getElementById('photoGrid');
-        const lightbox = document.getElementById('lightbox');
-        const lightboxImg = document.getElementById('lightboxImg');
-        
-        // This is your exact working API URL structure:
-        const apiURL = `https://api.github.com/repos/${username}/${repoName}/contents/${folderPath}`;
+        /* =========================================================
+           🛠️ GITHUB CONFIGURATION
+        ========================================================= */
 
-        // Supported image formats
-        const validExtensions = ['.jpg', '.jpeg', '.png', '.webp', '.gif'];
+        const username = "S7LEONNIE";
+        const repoName = "testgallery";
+
+        const folderPath = "images/client1";
+
+
+        /* =========================================================
+           📸 ELEMENTS
+        ========================================================= */
+
+        const grid =
+            document.getElementById("photoGrid");
+
+        const lightbox =
+            document.getElementById("lightbox");
+
+        const lightboxImg =
+            document.getElementById("lightboxImg");
+
+
+        /* =========================================================
+           🔗 GITHUB API
+        ========================================================= */
+
+        const apiURL =
+            `https://api.github.com/repos/${username}/${repoName}/contents/${folderPath}`;
+
+
+        /* =========================================================
+           🖼️ SUPPORTED IMAGE TYPES
+        ========================================================= */
+
+        const validExtensions = [
+            ".jpg",
+            ".jpeg",
+            ".png",
+            ".webp",
+            ".gif"
+        ];
+
+
+        /* =========================================================
+           📥 LOAD PHOTOS
+        ========================================================= */
 
         async function loadPhotos() {
+
             try {
-                const response = await fetch(apiURL);
-                if (!response.ok) throw new Error("Failed to load image folder contents.");
-                
-                const files = await response.json();
 
-                files.forEach(file => {
-                    // Check if the file is an image by looking at its extension
-                    const isImage = validExtensions.some(ext => file.name.toLowerCase().endsWith(ext));
-                    
-                    if (isImage) {
-                        const img = document.createElement('img');
-                        img.src = `${folderPath}/${file.name}`;
-                        img.alt = file.name;
-                        img.loading = "lazy";
-                        
-                        // 📸 Open lightbox on tap/click
-                        img.addEventListener('click', () => {
-                            lightboxImg.src = img.src;
-                            lightbox.style.display = 'flex';
-                        });
+                const response =
+                    await fetch(apiURL);
 
-                        grid.appendChild(img);
-                    }
-                });
-            } catch (error) {
-                console.error(error);
-                grid.innerHTML = `<p class="error">Oops! Couldn't load the gallery. Double-check your username and repo layout settings.</p>`;
-            }
-        }
-
-        // Close Lightbox smoothly
-        lightbox.addEventListener('click', () => {
-            lightbox.classList.remove('active');
-            setTimeout(() => { lightboxImg.src = ''; }, 300);
-        });
-
-        loadPhotos();
-    </script>
-
-</body>
-</html>
+                if (!response.ok) {
+                    throw new E
+```
