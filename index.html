@@ -142,10 +142,14 @@
                         img.alt = file.name;
                         img.loading = "lazy";
 
-                        // 📸 Open lightbox on tap/click
+                        /// Stagger the fade-in of images down the page
+                        img.style.animationDelay = `${delay}s`;
+                        delay += 0.04;
+
+                        // Open Lightbox with smooth transition classes
                         img.addEventListener('click', () => {
                             lightboxImg.src = img.src;
-                            lightbox.style.display = 'flex';
+                            lightbox.classList.add('active');
                         });
 
                         grid.appendChild(img);
@@ -157,10 +161,11 @@
             }
         }
 
-        // 📸 Close lightbox when tapping anywhere on the black overlay
+        // Close Lightbox smoothly
         lightbox.addEventListener('click', () => {
-            lightbox.style.display = 'none';
-            lightboxImg.src = '';
+            lightbox.classList.remove('active');
+            // Delays clearing src image text so it doesn't blink out before fading closes
+            setTimeout(() => { lightboxImg.src = ''; }, 300);
         });
 
         loadPhotos();
