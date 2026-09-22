@@ -2,17 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>NFC Shared Gallery</title>
+    <title>Our Memories</title>
 
     <style>
-
-        /* =====================================================
-           BASE
-        ===================================================== */
-
         * {
             box-sizing: border-box;
         }
@@ -21,1046 +15,556 @@
         body {
             margin: 0;
             padding: 0;
+            background: #ffffff;
+            font-family: Arial, sans-serif;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont,
-                         "Segoe UI", Roboto, sans-serif;
-
-            background-color: #121212;
-            color: #E0E0E0;
-
-            padding: 16px;
-
-            text-align: center;
-
             overflow-x: hidden;
         }
 
-        h1 {
-            margin: 8px 0 24px;
+        /* =========================
+           PAGE TITLE
+        ========================= */
 
-            font-weight: 300;
-            letter-spacing: 1px;
-
-            color: #FFFFFF;
+        .page-title {
+            text-align: center;
+            padding: 30px 20px 20px;
+            font-size: 28px;
+            font-weight: 600;
         }
 
+        /* =========================
+           PHOTO GALLERY
+        ========================= */
 
-        /* =====================================================
-           PHOTO GRID
-        ===================================================== */
-
-        .gallery-grid {
-            display: grid;
-
-            grid-template-columns:
-                repeat(3, minmax(0, 1fr));
-
-            gap: 8px;
-
+        .gallery {
             width: 100%;
-
             max-width: 1600px;
-
             margin: 0 auto;
+            padding: 0 8px 30px;
+
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
         }
 
-
-        .gallery-grid img {
-            display: block;
-
+        .gallery img {
             width: 100%;
-
             aspect-ratio: 1 / 1;
-
             object-fit: cover;
-
-            border-radius: 6px;
+            display: block;
 
             cursor: pointer;
 
-            background-color: #1E1E1E;
-
             opacity: 0;
-
-            transform: translateY(10px);
-
-            animation:
-                fadeInUp
-                0.4s
-                ease
-                forwards;
+            transform: translateY(5px);
 
             transition:
-                transform 0.2s ease,
-                filter 0.2s ease;
+                opacity 0.35s ease,
+                transform 0.35s ease;
         }
 
-
-        .gallery-grid img:hover {
-            filter: brightness(1.08);
+        .gallery img.loaded {
+            opacity: 1;
+            transform: translateY(0);
         }
 
-
-        .gallery-grid img:active {
-            transform: scale(0.96);
+        .gallery img:hover {
+            opacity: 0.9;
         }
 
-
-        /* =====================================================
-           RESPONSIVE GRID
-        ===================================================== */
-
+        /* Tablet */
         @media (min-width: 600px) {
-
-            .gallery-grid {
-                grid-template-columns:
-                    repeat(4, minmax(0, 1fr));
-
+            .gallery {
+                grid-template-columns: repeat(4, 1fr);
                 gap: 10px;
+                padding-left: 10px;
+                padding-right: 10px;
             }
         }
 
-
+        /* Desktop */
         @media (min-width: 900px) {
+            .gallery {
+                grid-template-columns: repeat(5, 1fr);
+            }
+        }
 
-            .gallery-grid {
-                grid-template-columns:
-                    repeat(5, minmax(0, 1fr));
-
+        /* Large desktop */
+        @media (min-width: 1300px) {
+            .gallery {
+                grid-template-columns: repeat(6, 1fr);
                 gap: 12px;
             }
         }
 
-
-        @media (min-width: 1300px) {
-
-            .gallery-grid {
-                grid-template-columns:
-                    repeat(6, minmax(0, 1fr));
-            }
-        }
-
-
-        /* =====================================================
-           THUMBNAIL ENTRANCE
-        ===================================================== */
-
-        @keyframes fadeInUp {
-
-            from {
-                opacity: 0;
-
-                transform:
-                    translateY(10px);
-            }
-
-            to {
-                opacity: 1;
-
-                transform:
-                    translateY(0);
-            }
-        }
-
-
-        /* =====================================================
+        /* =========================
            LIGHTBOX
-        ===================================================== */
+        ========================= */
 
         .lightbox {
-
-            display: none;
-
             position: fixed;
-
-            z-index: 9999;
-
             inset: 0;
 
             width: 100%;
             height: 100%;
 
-            background:
-                rgba(5, 5, 5, 0.95);
+            background: rgba(0, 0, 0, 0.94);
 
-            backdrop-filter:
-                blur(10px);
-
-            -webkit-backdrop-filter:
-                blur(10px);
-
-            justify-content: center;
+            display: none;
             align-items: center;
+            justify-content: center;
 
-            overflow: hidden;
-
-            touch-action: none;
+            z-index: 9999;
 
             opacity: 0;
         }
 
-
         .lightbox.active {
-
             display: flex;
-
-            animation:
-                lightboxFadeIn
-                0.25s
-                ease
-                forwards;
+            opacity: 1;
         }
 
+        /* =========================
+           LIGHTBOX CONTENT
+        ========================= */
 
-        /* =====================================================
-           IMAGE VIEWPORT
-        ===================================================== */
-
-        .lightbox-viewport {
-
+        .lightbox-content {
             position: relative;
 
             width: 100%;
             height: 100%;
 
             display: flex;
-
             align-items: center;
             justify-content: center;
 
-            overflow: hidden;
-
-            touch-action: none;
+            padding: 70px 80px;
         }
 
-
-        /* =====================================================
-           LIGHTBOX IMAGE
-        ===================================================== */
-
-        .lightbox img {
-
-            position: absolute;
-
-            max-width: 88vw;
-            max-height: 82vh;
+        #lightboxImg {
+            max-width: 100%;
+            max-height: 100%;
 
             width: auto;
             height: auto;
 
             object-fit: contain;
 
-            border-radius: 8px;
-
             user-select: none;
             -webkit-user-select: none;
 
-            -webkit-user-drag: none;
-
-            cursor: zoom-in;
-
-            transform:
-                translate3d(0, 0, 0)
-                scale(1);
-
-            transform-origin: center center;
-
-            opacity: 1;
-
-            box-shadow:
-                0 20px 70px
-                rgba(0, 0, 0, 0.65);
-
-            will-change:
-                transform,
-                opacity;
+            opacity: 0;
+            transform: scale(0.96);
 
             transition:
-                transform 0.28s
-                cubic-bezier(0.22, 1, 0.36, 1),
-                opacity 0.2s ease;
-        }
-
-
-        /* =====================================================
-           IMAGE OPENING ANIMATION
-        ===================================================== */
-
-        .lightbox.opening img {
-
-            animation:
-                imageOpen
-                0.4s
-                cubic-bezier(
-                    0.22,
-                    1,
-                    0.36,
-                    1
-                );
-        }
-
-
-        @keyframes imageOpen {
-
-            0% {
-
-                opacity: 0;
-
-                transform:
-                    scale(0.72)
-                    translateY(20px);
-            }
-
-            70% {
-
-                opacity: 1;
-
-                transform:
-                    scale(1.03)
-                    translateY(0);
-            }
-
-            100% {
-
-                opacity: 1;
-
-                transform:
-                    scale(1)
-                    translateY(0);
-            }
-        }
-
-
-        /* =====================================================
-           NAVIGATION ARROWS
-        ===================================================== */
-
-        .nav-button {
-
-            position: absolute;
-
-            top: 50%;
-
-            transform:
-                translateY(-50%);
-
-            z-index: 10;
-
-            width: 48px;
-            height: 48px;
-
-            border: none;
-
-            border-radius: 50%;
-
-            display: flex;
-
-            justify-content: center;
-            align-items: center;
-
-            background:
-                rgba(255, 255, 255, 0.12);
-
-            color: white;
-
-            font-size: 28px;
-
-            font-weight: 200;
-
-            cursor: pointer;
-
-            backdrop-filter:
-                blur(8px);
-
-            -webkit-backdrop-filter:
-                blur(8px);
-
-            transition:
-                background 0.2s ease,
-                transform 0.2s ease,
-                opacity 0.2s ease;
-        }
-
-
-        .nav-button:hover {
-
-            background:
-                rgba(255, 255, 255, 0.22);
-        }
-
-
-        .nav-button:active {
-
-            transform:
-                translateY(-50%)
-                scale(0.9);
-        }
-
-
-        .prev-button {
-            left: 18px;
-        }
-
-
-        .next-button {
-            right: 18px;
-        }
-
-
-        /* =====================================================
-           PHOTO COUNTER
-        ===================================================== */
-
-        .photo-counter {
-
-            position: absolute;
-
-            top: 18px;
-            left: 50%;
-
-            transform:
-                translateX(-50%);
-
-            z-index: 20;
-
-            padding: 7px 13px;
-
-            border-radius: 20px;
-
-            background:
-                rgba(0, 0, 0, 0.45);
-
-            color:
-                rgba(255, 255, 255, 0.9);
-
-            font-size: 13px;
-
-            letter-spacing: 0.5px;
-
-            backdrop-filter:
-                blur(8px);
-
-            -webkit-backdrop-filter:
-                blur(8px);
-
-            pointer-events: none;
-        }
-
-
-        /* =====================================================
-           CLOSE BUTTON
-        ===================================================== */
-
-        .close-button {
-
-            position: absolute;
-
-            top: 16px;
-            right: 18px;
-
-            z-index: 20;
-
-            width: 44px;
-            height: 44px;
-
-            border: none;
-
-            border-radius: 50%;
-
-            display: flex;
-
-            align-items: center;
-            justify-content: center;
-
-            background:
-                rgba(255, 255, 255, 0.10);
-
-            color: white;
-
-            font-size: 28px;
-
-            font-weight: 200;
-
-            cursor: pointer;
-
-            transition:
-                background 0.2s ease,
+                opacity 0.2s ease,
                 transform 0.2s ease;
         }
 
+        #lightboxImg.show {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* =========================
+           CLOSE BUTTON
+        ========================= */
+
+        .close-button {
+            position: absolute;
+
+            top: 18px;
+            right: 24px;
+
+            width: 45px;
+            height: 45px;
+
+            border: none;
+            border-radius: 50%;
+
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+
+            font-size: 32px;
+            line-height: 1;
+
+            cursor: pointer;
+
+            z-index: 10;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            transition: background 0.2s ease;
+        }
 
         .close-button:hover {
-
-            background:
-                rgba(255, 255, 255, 0.20);
+            background: rgba(255, 255, 255, 0.28);
         }
 
+        /* =========================
+           NAVIGATION BUTTONS
+        ========================= */
 
-        .close-button:active {
+        .nav-button {
+            position: absolute;
 
-            transform:
-                scale(0.9);
+            top: 50%;
+            transform: translateY(-50%);
+
+            width: 50px;
+            height: 70px;
+
+            border: none;
+            border-radius: 10px;
+
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+
+            font-size: 48px;
+            line-height: 1;
+
+            cursor: pointer;
+
+            z-index: 10;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            transition: background 0.2s ease;
         }
 
-
-        /* =====================================================
-           SLIDE ANIMATIONS
-        ===================================================== */
-
-        .slide-out-left {
-
-            animation:
-                slideOutLeft
-                0.22s
-                ease
-                forwards;
+        .nav-button:hover {
+            background: rgba(255, 255, 255, 0.28);
         }
 
-
-        .slide-out-right {
-
-            animation:
-                slideOutRight
-                0.22s
-                ease
-                forwards;
+        .prev-button {
+            left: 20px;
         }
 
-
-        .slide-in-left {
-
-            animation:
-                slideInLeft
-                0.28s
-                cubic-bezier(
-                    0.22,
-                    1,
-                    0.36,
-                    1
-                )
-                forwards;
+        .next-button {
+            right: 20px;
         }
 
+        /* =========================
+           PHOTO COUNTER
+        ========================= */
 
-        .slide-in-right {
+        .photo-counter {
+            position: absolute;
 
-            animation:
-                slideInRight
-                0.28s
-                cubic-bezier(
-                    0.22,
-                    1,
-                    0.36,
-                    1
-                )
-                forwards;
+            bottom: 20px;
+            left: 50%;
+
+            transform: translateX(-50%);
+
+            color: white;
+
+            font-size: 14px;
+
+            background: rgba(0, 0, 0, 0.45);
+
+            padding: 7px 12px;
+
+            border-radius: 20px;
+
+            z-index: 10;
         }
 
-
-        @keyframes slideOutLeft {
-
-            to {
-
-                opacity: 0;
-
-                transform:
-                    translate3d(-35vw, 0, 0)
-                    scale(0.96);
-            }
-        }
-
-
-        @keyframes slideOutRight {
-
-            to {
-
-                opacity: 0;
-
-                transform:
-                    translate3d(35vw, 0, 0)
-                    scale(0.96);
-            }
-        }
-
-
-        @keyframes slideInLeft {
-
-            from {
-
-                opacity: 0;
-
-                transform:
-                    translate3d(35vw, 0, 0)
-                    scale(0.96);
-            }
-
-            to {
-
-                opacity: 1;
-
-                transform:
-                    translate3d(0, 0, 0)
-                    scale(1);
-            }
-        }
-
-
-        @keyframes slideInRight {
-
-            from {
-
-                opacity: 0;
-
-                transform:
-                    translate3d(-35vw, 0, 0)
-                    scale(0.96);
-            }
-
-            to {
-
-                opacity: 1;
-
-                transform:
-                    translate3d(0, 0, 0)
-                    scale(1);
-            }
-        }
-
-
-        /* =====================================================
-           ERROR
-        ===================================================== */
-
-        .error {
-
-            grid-column:
-                1 / -1;
-
-            padding:
-                40px 20px;
-
-            color:
-                #999;
-        }
-
-
-        /* =====================================================
-           MOBILE
-        ===================================================== */
+        /* =========================
+           MOBILE LIGHTBOX
+        ========================= */
 
         @media (max-width: 600px) {
 
-            .lightbox {
-
-                background:
-                    rgba(0, 0, 0, 0.98);
-
-                backdrop-filter:
-                    blur(5px);
-
-                -webkit-backdrop-filter:
-                    blur(5px);
+            .page-title {
+                font-size: 24px;
+                padding-top: 24px;
             }
 
-
-            .lightbox img {
-
-                max-width: 94vw;
-                max-height: 84vh;
-
-                border-radius: 5px;
+            .lightbox-content {
+                padding: 60px 15px;
             }
-
 
             .nav-button {
-
                 width: 40px;
-                height: 40px;
+                height: 55px;
 
-                background:
-                    rgba(255, 255, 255, 0.08);
+                font-size: 38px;
 
-                font-size: 22px;
+                background: rgba(255, 255, 255, 0.12);
             }
-
 
             .prev-button {
                 left: 8px;
             }
 
-
             .next-button {
                 right: 8px;
             }
 
-
             .close-button {
-
-                top: 10px;
-                right: 10px;
+                top: 12px;
+                right: 12px;
 
                 width: 40px;
                 height: 40px;
 
-                font-size: 25px;
+                font-size: 28px;
             }
-
 
             .photo-counter {
-
-                top: 13px;
-
-                font-size: 12px;
-
-                padding:
-                    6px 11px;
+                bottom: 12px;
+                font-size: 13px;
             }
         }
-
-
-        /* =====================================================
-           HIDE ARROWS ON VERY SMALL PHONES
-        ===================================================== */
-
-        @media (max-width: 400px) {
-
-            .nav-button {
-
-                opacity: 0.5;
-            }
-        }
-
-
-        /* =====================================================
-           REDUCE MOTION
-        ===================================================== */
-
-        @media (prefers-reduced-motion: reduce) {
-
-            *,
-            *::before,
-            *::after {
-
-                animation-duration:
-                    0.01ms !important;
-
-                transition-duration:
-                    0.01ms !important;
-            }
-        }
-
     </style>
 </head>
 
 
 <body>
 
-
-    <!-- =====================================================
+    <!-- =========================
          PAGE TITLE
-         ===================================================== -->
+    ========================= -->
 
-    <h1>NFC Shared Gallery</h1>
-
-
-    <!-- =====================================================
-         PHOTO GRID
-         ===================================================== -->
-
-    <div
-        class="gallery-grid"
-        id="photoGrid">
+    <div class="page-title">
+        Our Memories
     </div>
 
 
-    <!-- =====================================================
+    <!-- =========================
+         PHOTO GALLERY
+    ========================= -->
+
+    <div id="gallery" class="gallery"></div>
+
+
+    <!-- =========================
          LIGHTBOX
-         ===================================================== -->
+    ========================= -->
 
-    <div
-        id="lightbox"
-        class="lightbox">
-
-
-        <!-- Photo counter -->
-
-        <div
-            id="photoCounter"
-            class="photo-counter">
-            1 / 1
-        </div>
-
-
-        <!-- Close -->
+    <div id="lightbox" class="lightbox">
 
         <button
             id="closeButton"
             class="close-button"
-            aria-label="Close gallery">
+            aria-label="Close"
+        >
             ×
         </button>
 
 
-        <!-- Previous -->
-
         <button
             id="prevButton"
             class="nav-button prev-button"
-            aria-label="Previous photo">
+            aria-label="Previous photo"
+        >
             ‹
         </button>
 
 
-        <!-- Image viewport -->
-
-        <div
-            id="lightboxViewport"
-            class="lightbox-viewport">
+        <div class="lightbox-content">
 
             <img
                 id="lightboxImg"
                 src=""
-                alt="Enlarged view">
+                alt="Enlarged memory"
+            >
 
         </div>
 
 
-        <!-- Next -->
-
         <button
             id="nextButton"
             class="nav-button next-button"
-            aria-label="Next photo">
+            aria-label="Next photo"
+        >
             ›
         </button>
 
+
+        <div
+            id="photoCounter"
+            class="photo-counter"
+        >
+            1 / 1
+        </div>
 
     </div>
 
 
     <script>
 
-
         /* =====================================================
-           GITHUB CONFIGURATION
+           GITHUB SETTINGS
         ===================================================== */
 
-        const username =
-            "S7LEONNIE";
+        const username = "S7LEONNIE";
 
-        const repoName =
-            "testgallery";
+        const repoName = "testgallery";
 
-        const folderPath =
-            "images/client1";
+        const folderPath = "images/client1";
+
+
+        /* =====================================================
+           GALLERY SETTINGS
+        ===================================================== */
+
+        const supportedExtensions = [
+            ".jpg",
+            ".jpeg",
+            ".png",
+            ".webp",
+            ".gif"
+        ];
 
 
         /* =====================================================
            ELEMENTS
         ===================================================== */
 
-        const grid =
-            document.getElementById(
-                "photoGrid"
-            );
+        const gallery =
+            document.getElementById("gallery");
 
         const lightbox =
-            document.getElementById(
-                "lightbox"
-            );
+            document.getElementById("lightbox");
 
         const lightboxImg =
-            document.getElementById(
-                "lightboxImg"
-            );
-
-        const viewport =
-            document.getElementById(
-                "lightboxViewport"
-            );
-
-        const prevButton =
-            document.getElementById(
-                "prevButton"
-            );
-
-        const nextButton =
-            document.getElementById(
-                "nextButton"
-            );
+            document.getElementById("lightboxImg");
 
         const closeButton =
-            document.getElementById(
-                "closeButton"
-            );
+            document.getElementById("closeButton");
+
+        const prevButton =
+            document.getElementById("prevButton");
+
+        const nextButton =
+            document.getElementById("nextButton");
 
         const photoCounter =
-            document.getElementById(
-                "photoCounter"
-            );
+            document.getElementById("photoCounter");
 
 
         /* =====================================================
-           GITHUB API
-        ===================================================== */
-
-        const apiURL =
-            `https://api.github.com/repos/${username}/${repoName}/contents/${folderPath}`;
-
-
-        /* =====================================================
-           IMAGE FORMATS
-        ===================================================== */
-
-        const validExtensions = [
-
-            ".jpg",
-            ".jpeg",
-            ".png",
-            ".webp",
-            ".gif"
-
-        ];
-
-
-        /* =====================================================
-           PHOTO DATA
+           VARIABLES
         ===================================================== */
 
         let photos = [];
 
         let currentIndex = 0;
 
-        let isAnimating = false;
-
 
         /* =====================================================
-           ZOOM STATE
-        ===================================================== */
-
-        let zoomLevel = 1;
-
-        const MIN_ZOOM = 1;
-
-        const MAX_ZOOM = 3;
-
-
-        /* =====================================================
-           TOUCH STATE
-        ===================================================== */
-
-        let touchStartX = 0;
-        let touchStartY = 0;
-
-        let touchCurrentX = 0;
-        let touchCurrentY = 0;
-
-        let isTouching = false;
-
-
-        /* =====================================================
-           DOUBLE TAP
-        ===================================================== */
-
-        let lastTapTime = 0;
-
-
-        /* =====================================================
-           LOAD PHOTOS
+           LOAD PHOTOS FROM GITHUB
         ===================================================== */
 
         async function loadPhotos() {
 
             try {
 
-                const response =
-                    await fetch(apiURL);
+                const apiUrl =
+                    `https://api.github.com/repos/${username}/${repoName}/contents/${folderPath}`;
 
+                const response =
+                    await fetch(apiUrl);
 
                 if (!response.ok) {
-
                     throw new Error(
-                        "Failed to load image folder contents."
+                        `GitHub error: ${response.status}`
                     );
                 }
-
 
                 const files =
                     await response.json();
 
 
-                photos =
-                    files.filter(file => {
+                /* Keep only image files */
 
-                        return validExtensions.some(
-                            ext =>
-                                file.name
-                                    .toLowerCase()
-                                    .endsWith(ext)
-                        );
+                photos = files.filter(file => {
 
-                    });
-
-
-                /* Create thumbnails */
-
-                photos.forEach(
-                    (file, index) => {
-
-                        const img =
-                            document.createElement(
-                                "img"
-                            );
-
-
-                        img.src =
-                            `${folderPath}/${file.name}`;
-
-
-                        img.alt =
-                            file.name;
-
-
-                        img.loading =
-                            "lazy";
-
-
-                        img.style.animationDelay =
-                            `${index * 0.04}s`;
-
-
-                        img.addEventListener(
-                            "click",
-                            () => {
-
-                                openLightbox(index);
-
-                            }
-                        );
-
-
-                        grid.appendChild(img);
-
+                    if (file.type !== "file") {
+                        return false;
                     }
+
+                    const fileName =
+                        file.name.toLowerCase();
+
+                    return supportedExtensions.some(
+                        extension =>
+                            fileName.endsWith(extension)
+                    );
+
+                });
+
+
+                /* Sort alphabetically */
+
+                photos.sort((a, b) =>
+                    a.name.localeCompare(b.name)
                 );
 
+
+                /* Display thumbnails */
+
+                photos.forEach((photo, index) => {
+
+                    const img =
+                        document.createElement("img");
+
+                    img.src = photo.download_url;
+
+                    img.alt =
+                        `Memory ${index + 1}`;
+
+                    img.loading = "lazy";
+
+
+                    img.addEventListener(
+                        "load",
+                        () => {
+                            img.classList.add("loaded");
+                        }
+                    );
+
+
+                    img.addEventListener(
+                        "click",
+                        () => {
+                            openLightbox(index);
+                        }
+                    );
+
+
+                    gallery.appendChild(img);
+
+                });
+
+
+                /* If there are no photos */
+
+                if (photos.length === 0) {
+
+                    gallery.innerHTML =
+                        "<p style='grid-column: 1/-1; text-align:center;'>No photos yet.</p>";
+
+                }
 
             }
 
             catch (error) {
 
-                console.error(error);
+                console.error(
+                    "Unable to load photos:",
+                    error
+                );
 
-
-                grid.innerHTML = `
-                    <p class="error">
-                        Oops! Couldn't load the gallery.
-                        Double-check your username
-                        and repo layout settings.
-                    </p>
-                `;
+                gallery.innerHTML =
+                    "<p style='grid-column: 1/-1; text-align:center;'>Unable to load photos.</p>";
 
             }
 
@@ -1073,159 +577,128 @@
 
         function openLightbox(index) {
 
-            if (
-                index < 0 ||
-                index >= photos.length
-            ) {
+            if (!photos.length) {
                 return;
             }
 
 
-            currentIndex =
-                index;
+            currentIndex = index;
 
 
-            zoomLevel =
-                1;
+            updateLightbox();
 
 
-            lightboxImg.style.transform =
-                "translate3d(0,0,0) scale(1)";
-
-
-            updatePhoto();
-
-
-            lightbox.classList.add(
-                "active"
-            );
-
-
-            lightbox.classList.remove(
-                "opening"
-            );
-
-
-            /*
-             * Force the browser to register the
-             * class removal before adding it again.
-             */
-
-            void lightbox.offsetWidth;
-
-
-            lightbox.classList.add(
-                "opening"
-            );
+            lightbox.classList.add("active");
 
 
             document.body.style.overflow =
                 "hidden";
 
-
-            preloadNeighbours();
-
         }
 
 
         /* =====================================================
-           UPDATE PHOTO
+           UPDATE LIGHTBOX
         ===================================================== */
 
-        function updatePhoto(
-            direction = null
-        ) {
+        function updateLightbox() {
 
             const photo =
                 photos[currentIndex];
 
 
-            if (!photo) {
-                return;
-            }
+            /* Hide current image briefly
+               so it animates when changed */
+
+            lightboxImg.classList.remove("show");
 
 
-            const newSrc =
-                `${folderPath}/${photo.name}`;
-
+            /* Change image */
 
             lightboxImg.src =
-                newSrc;
-
+                photo.download_url;
 
             lightboxImg.alt =
                 photo.name;
 
 
+            /* Counter */
+
             photoCounter.textContent =
                 `${currentIndex + 1} / ${photos.length}`;
 
 
-            updateNavigation();
+            /* Previous button */
 
+            if (currentIndex === 0) {
 
-            zoomLevel =
-                1;
+                prevButton.style.display =
+                    "none";
 
+            } else {
 
-            lightboxImg.style.transform =
-                "translate3d(0,0,0) scale(1)";
-
-
-            if (direction) {
-
-                lightboxImg.classList.remove(
-                    "slide-in-left",
-                    "slide-in-right"
-                );
-
-
-                void lightboxImg.offsetWidth;
-
-
-                if (direction === "next") {
-
-                    lightboxImg.classList.add(
-                        "slide-in-left"
-                    );
-
-                } else {
-
-                    lightboxImg.classList.add(
-                        "slide-in-right"
-                    );
-
-                }
+                prevButton.style.display =
+                    "flex";
 
             }
 
-        }
+
+            /* Next button */
+
+            if (currentIndex === photos.length - 1) {
+
+                nextButton.style.display =
+                    "none";
+
+            } else {
+
+                nextButton.style.display =
+                    "flex";
+
+            }
 
 
-        /* =====================================================
-           NAVIGATION
-        ===================================================== */
+            /* Animate image once loaded */
 
-        function updateNavigation() {
+            lightboxImg.onload = () => {
 
-            /*
-             * Hide previous on first photo.
-             */
+                requestAnimationFrame(() => {
 
-            prevButton.style.display =
-                currentIndex === 0
-                    ? "none"
-                    : "flex";
+                    lightboxImg.classList.add(
+                        "show"
+                    );
+
+                });
+
+            };
 
 
-            /*
-             * Hide next on last photo.
-             */
+            /* Preload previous image */
 
-            nextButton.style.display =
-                currentIndex === photos.length - 1
-                    ? "none"
-                    : "flex";
+            if (currentIndex > 0) {
+
+                const previousImage =
+                    new Image();
+
+                previousImage.src =
+                    photos[currentIndex - 1]
+                        .download_url;
+
+            }
+
+
+            /* Preload next image */
+
+            if (currentIndex < photos.length - 1) {
+
+                const nextImage =
+                    new Image();
+
+                nextImage.src =
+                    photos[currentIndex + 1]
+                        .download_url;
+
+            }
 
         }
 
@@ -1234,35 +707,18 @@
            NEXT PHOTO
         ===================================================== */
 
-        function nextPhoto() {
+        function showNext() {
 
             if (
-                isAnimating ||
-                currentIndex >= photos.length - 1
+                currentIndex <
+                photos.length - 1
             ) {
-                return;
+
+                currentIndex++;
+
+                updateLightbox();
+
             }
-
-
-            isAnimating =
-                true;
-
-
-            currentIndex++;
-
-
-            updatePhoto("next");
-
-
-            preloadNeighbours();
-
-
-            setTimeout(() => {
-
-                isAnimating =
-                    false;
-
-            }, 280);
 
         }
 
@@ -1271,70 +727,15 @@
            PREVIOUS PHOTO
         ===================================================== */
 
-        function previousPhoto() {
+        function showPrevious() {
 
-            if (
-                isAnimating ||
-                currentIndex <= 0
-            ) {
-                return;
+            if (currentIndex > 0) {
+
+                currentIndex--;
+
+                updateLightbox();
+
             }
-
-
-            isAnimating =
-                true;
-
-
-            currentIndex--;
-
-
-            updatePhoto("previous");
-
-
-            preloadNeighbours();
-
-
-            setTimeout(() => {
-
-                isAnimating =
-                    false;
-
-            }, 280);
-
-        }
-
-
-        /* =====================================================
-           PRELOAD NEIGHBOURING PHOTOS
-        ===================================================== */
-
-        function preloadNeighbours() {
-
-            const indexes = [
-
-                currentIndex - 1,
-                currentIndex + 1
-
-            ];
-
-
-            indexes.forEach(index => {
-
-                if (
-                    index >= 0 &&
-                    index < photos.length
-                ) {
-
-                    const image =
-                        new Image();
-
-
-                    image.src =
-                        `${folderPath}/${photos[index].name}`;
-
-                }
-
-            });
 
         }
 
@@ -1349,22 +750,12 @@
                 "active"
             );
 
-
-            lightbox.classList.remove(
-                "opening"
-            );
-
-
             document.body.style.overflow =
                 "";
 
-
-            zoomLevel =
-                1;
-
-
-            lightboxImg.style.transform =
-                "translate3d(0,0,0) scale(1)";
+            lightboxImg.classList.remove(
+                "show"
+            );
 
         }
 
@@ -1373,67 +764,37 @@
            BUTTON EVENTS
         ===================================================== */
 
-        nextButton.addEventListener(
+        closeButton.addEventListener(
             "click",
-            event => {
-
-                event.stopPropagation();
-
-                nextPhoto();
-
-            }
+            closeLightbox
         );
 
 
         prevButton.addEventListener(
             "click",
-            event => {
-
-                event.stopPropagation();
-
-                previousPhoto();
-
-            }
+            showPrevious
         );
 
 
-        closeButton.addEventListener(
+        nextButton.addEventListener(
             "click",
-            event => {
-
-                event.stopPropagation();
-
-                closeLightbox();
-
-            }
+            showNext
         );
 
 
         /* =====================================================
-           CLICK BACKGROUND TO CLOSE
+           CLICK DARK BACKGROUND TO CLOSE
         ===================================================== */
 
         lightbox.addEventListener(
             "click",
-            event => {
+            (event) => {
 
                 if (
-                    event.target ===
-                    lightbox ||
-                    event.target ===
-                    viewport
+                    event.target === lightbox
                 ) {
 
-                    /*
-                     * Only close when the image
-                     * isn't zoomed.
-                     */
-
-                    if (zoomLevel === 1) {
-
-                        closeLightbox();
-
-                    }
+                    closeLightbox();
 
                 }
 
@@ -1447,14 +808,19 @@
 
         document.addEventListener(
             "keydown",
-            event => {
+            (event) => {
+
+                /* Don't do anything if
+                   lightbox isn't open */
 
                 if (
                     !lightbox.classList.contains(
                         "active"
                     )
                 ) {
+
                     return;
+
                 }
 
 
@@ -1464,8 +830,6 @@
 
                     closeLightbox();
 
-                    return;
-
                 }
 
 
@@ -1473,9 +837,7 @@
                     event.key === "ArrowRight"
                 ) {
 
-                    nextPhoto();
-
-                    return;
+                    showNext();
 
                 }
 
@@ -1484,334 +846,9 @@
                     event.key === "ArrowLeft"
                 ) {
 
-                    previousPhoto();
-
-                    return;
+                    showPrevious();
 
                 }
-
-            }
-        );
-
-
-        /* =====================================================
-           DOUBLE CLICK / DOUBLE TAP ZOOM
-        ===================================================== */
-
-        lightboxImg.addEventListener(
-            "dblclick",
-            event => {
-
-                event.preventDefault();
-
-                toggleZoom();
-
-            }
-        );
-
-
-        function toggleZoom() {
-
-            if (
-                zoomLevel === 1
-            ) {
-
-                zoomLevel =
-                    2;
-
-            } else {
-
-                zoomLevel =
-                    1;
-
-            }
-
-
-            lightboxImg.style.transform =
-                `translate3d(0,0,0) scale(${zoomLevel})`;
-
-        }
-
-
-        /* =====================================================
-           MOUSE WHEEL ZOOM
-        ===================================================== */
-
-        lightboxImg.addEventListener(
-            "wheel",
-            event => {
-
-                event.preventDefault();
-
-
-                const direction =
-                    event.deltaY < 0
-                        ? 0.25
-                        : -0.25;
-
-
-                zoomLevel =
-                    Math.min(
-                        MAX_ZOOM,
-                        Math.max(
-                            MIN_ZOOM,
-                            zoomLevel + direction
-                        )
-                    );
-
-
-                lightboxImg.style.transform =
-                    `translate3d(0,0,0) scale(${zoomLevel})`;
-
-            },
-            {
-                passive: false
-            }
-        );
-
-
-        /* =====================================================
-           TOUCH START
-        ===================================================== */
-
-        viewport.addEventListener(
-            "touchstart",
-            event => {
-
-                if (
-                    event.touches.length !== 1
-                ) {
-                    return;
-                }
-
-
-                const touch =
-                    event.touches[0];
-
-
-                touchStartX =
-                    touch.clientX;
-
-
-                touchStartY =
-                    touch.clientY;
-
-
-                touchCurrentX =
-                    touch.clientX;
-
-
-                touchCurrentY =
-                    touch.clientY;
-
-
-                isTouching =
-                    true;
-
-            },
-            {
-                passive: true
-            }
-        );
-
-
-        /* =====================================================
-           TOUCH MOVE
-        ===================================================== */
-
-        viewport.addEventListener(
-            "touchmove",
-            event => {
-
-                if (
-                    !isTouching ||
-                    event.touches.length !== 1
-                ) {
-                    return;
-                }
-
-
-                const touch =
-                    event.touches[0];
-
-
-                touchCurrentX =
-                    touch.clientX;
-
-
-                touchCurrentY =
-                    touch.clientY;
-
-
-                /*
-                 * Don't interfere with zoomed images.
-                 */
-
-                if (
-                    zoomLevel > 1
-                ) {
-                    return;
-                }
-
-
-                const deltaX =
-                    touchCurrentX -
-                    touchStartX;
-
-
-                const deltaY =
-                    touchCurrentY -
-                    touchStartY;
-
-
-                /*
-                 * If primarily horizontal,
-                 * slightly move the image with
-                 * the finger.
-                 */
-
-                if (
-                    Math.abs(deltaX) >
-                    Math.abs(deltaY)
-                ) {
-
-                    lightboxImg.style.transform =
-                        `translate3d(${deltaX * 0.35}px, 0, 0)`;
-
-                }
-
-            },
-            {
-                passive: true
-            }
-        );
-
-
-        /* =====================================================
-           TOUCH END
-        ===================================================== */
-
-        viewport.addEventListener(
-            "touchend",
-            () => {
-
-                if (!isTouching) {
-                    return;
-                }
-
-
-                isTouching =
-                    false;
-
-
-                const deltaX =
-                    touchCurrentX -
-                    touchStartX;
-
-
-                const deltaY =
-                    touchCurrentY -
-                    touchStartY;
-
-
-                /*
-                 * Swipe threshold.
-                 */
-
-                const SWIPE_DISTANCE =
-                    70;
-
-
-                /* ---------------------------------------------
-                   SWIPE DOWN → CLOSE
-                --------------------------------------------- */
-
-                if (
-                    Math.abs(deltaY) >
-                    SWIPE_DISTANCE &&
-                    Math.abs(deltaY) >
-                    Math.abs(deltaX) * 1.3 &&
-                    deltaY > 0
-                ) {
-
-                    closeLightbox();
-
-                    return;
-
-                }
-
-
-                /* ---------------------------------------------
-                   SWIPE LEFT → NEXT
-                --------------------------------------------- */
-
-                if (
-                    Math.abs(deltaX) >
-                    SWIPE_DISTANCE &&
-                    Math.abs(deltaX) >
-                    Math.abs(deltaY)
-                ) {
-
-                    if (
-                        deltaX < 0
-                    ) {
-
-                        nextPhoto();
-
-                    } else {
-
-                        previousPhoto();
-
-                    }
-
-
-                    return;
-
-                }
-
-
-                /*
-                 * Not enough movement.
-                 * Return image to centre.
-                 */
-
-                lightboxImg.style.transform =
-                    `translate3d(0,0,0) scale(${zoomLevel})`;
-
-            }
-        );
-
-
-        /* =====================================================
-           SIMPLE DOUBLE-TAP DETECTION
-        ===================================================== */
-
-        viewport.addEventListener(
-            "touchend",
-            event => {
-
-                const now =
-                    Date.now();
-
-
-                const timeSinceLastTap =
-                    now - lastTapTime;
-
-
-                if (
-                    timeSinceLastTap < 300 &&
-                    timeSinceLastTap > 0
-                ) {
-
-                    event.preventDefault();
-
-                    toggleZoom();
-
-                }
-
-
-                lastTapTime =
-                    now;
 
             }
         );
