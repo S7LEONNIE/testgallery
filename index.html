@@ -7,9 +7,9 @@
     <title>NFC Shared Gallery</title>
 
     <style>
-        /* =========================================================
-           🎨 BASE THEME
-        ========================================================= */
+        /* =====================================================
+           BASE
+        ===================================================== */
 
         * {
             box-sizing: border-box;
@@ -22,16 +22,15 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
-                         Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont,
+                         "Segoe UI", Roboto, sans-serif;
 
-            background: #121212;
+            background-color: #121212;
             color: #E0E0E0;
 
             padding: 16px;
-            text-align: center;
 
-            overflow-x: hidden;
+            text-align: center;
         }
 
         h1 {
@@ -44,14 +43,14 @@
         }
 
 
-        /* =========================================================
-           📸 RESPONSIVE PHOTO GRID
-        ========================================================= */
+        /* =====================================================
+           PHOTO GRID
+           ===================================================== */
 
         .gallery-grid {
             display: grid;
 
-            /* Mobile default */
+            /* 3 columns on mobile */
             grid-template-columns: repeat(3, minmax(0, 1fr));
 
             gap: 8px;
@@ -74,128 +73,134 @@
 
             cursor: pointer;
 
-            background: #1E1E1E;
+            background-color: #1E1E1E;
 
             opacity: 0;
-            transform: translateY(12px) scale(0.98);
 
-            animation: galleryFadeIn 0.45s ease forwards;
+            transform: translateY(10px);
+
+            animation: fadeInUp 0.4s ease forwards;
 
             transition:
                 transform 0.2s ease,
                 filter 0.2s ease;
         }
 
-        /* Slight interaction when tapping a thumbnail */
-
-        .gallery-grid img:active {
-            transform: scale(0.94);
-        }
-
         .gallery-grid img:hover {
             filter: brightness(1.08);
         }
 
+        .gallery-grid img:active {
+            transform: scale(0.96);
+        }
 
-        /* =========================================================
-           📱 TABLET
-        ========================================================= */
+
+        /* =====================================================
+           TABLET
+           ===================================================== */
 
         @media (min-width: 600px) {
             .gallery-grid {
-                grid-template-columns: repeat(4, minmax(0, 1fr));
+                grid-template-columns:
+                    repeat(4, minmax(0, 1fr));
+
                 gap: 10px;
             }
         }
 
 
-        /* =========================================================
-           💻 DESKTOP
-        ========================================================= */
+        /* =====================================================
+           DESKTOP
+           ===================================================== */
 
         @media (min-width: 900px) {
-            body {
-                padding: 24px;
-            }
-
             .gallery-grid {
-                grid-template-columns: repeat(5, minmax(0, 1fr));
+                grid-template-columns:
+                    repeat(5, minmax(0, 1fr));
+
                 gap: 12px;
             }
         }
 
 
-        /* =========================================================
-           🖥️ LARGE DESKTOP
-        ========================================================= */
+        /* =====================================================
+           LARGE DESKTOP
+           ===================================================== */
 
         @media (min-width: 1300px) {
             .gallery-grid {
-                grid-template-columns: repeat(6, minmax(0, 1fr));
+                grid-template-columns:
+                    repeat(6, minmax(0, 1fr));
             }
         }
 
 
-        /* =========================================================
-           ✨ THUMBNAIL ENTRANCE ANIMATION
-        ========================================================= */
+        /* =====================================================
+           THUMBNAIL ANIMATION
+           ===================================================== */
 
-        @keyframes galleryFadeIn {
+        @keyframes fadeInUp {
             from {
                 opacity: 0;
-                transform: translateY(12px) scale(0.97);
+                transform: translateY(10px);
             }
 
             to {
                 opacity: 1;
-                transform: translateY(0) scale(1);
+                transform: translateY(0);
             }
         }
 
 
-        /* =========================================================
-           📸 LIGHTBOX
-        ========================================================= */
+        /* =====================================================
+           LIGHTBOX
+           ===================================================== */
 
         .lightbox {
-            position: fixed;
+            display: none;
 
-            inset: 0;
+            position: fixed;
 
             z-index: 9999;
 
-            display: flex;
+            top: 0;
+            left: 0;
+
+            width: 100%;
+            height: 100%;
+
+            background: rgba(5, 5, 5, 0.94);
+
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
 
             justify-content: center;
             align-items: center;
 
-            padding: 24px;
-
-            background: rgba(8, 8, 8, 0.94);
-
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-
             cursor: zoom-out;
 
             opacity: 0;
-            visibility: hidden;
-
-            transition:
-                opacity 0.35s ease,
-                visibility 0.35s ease;
         }
 
 
-        /* =========================================================
-           🖼️ LIGHTBOX IMAGE
-        ========================================================= */
+        /* =====================================================
+           LIGHTBOX ACTIVE
+           ===================================================== */
+
+        .lightbox.active {
+            display: flex;
+
+            animation: lightboxFadeIn 0.3s ease forwards;
+        }
+
+
+        /* =====================================================
+           ENLARGED IMAGE
+           ===================================================== */
 
         .lightbox img {
-            display: block;
-
-            max-width: 94vw;
-            max-height: 88vh;
+            max-width: 92%;
+            max-height: 85vh;
 
             width: auto;
             height: auto;
@@ -204,137 +209,156 @@
 
             border-radius: 8px;
 
+            cursor: default;
+
             box-shadow:
                 0 20px 70px rgba(0, 0, 0, 0.65);
 
-            cursor: default;
-
-            /* Starting state */
             opacity: 0;
 
             transform:
-                scale(0.72)
+                scale(0.75)
                 translateY(20px);
 
-            transition:
-                transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
-                opacity 0.3s ease;
+            animation:
+                lightboxImageIn
+                0.45s
+                cubic-bezier(0.22, 1, 0.36, 1)
+                0.05s
+                forwards;
         }
 
 
-        /* =========================================================
-           ✨ ACTIVE LIGHTBOX ANIMATION
-        ========================================================= */
+        /* =====================================================
+           LIGHTBOX BACKGROUND ANIMATION
+           ===================================================== */
 
-        .lightbox.active {
-            opacity: 1;
-            visibility: visible;
+        @keyframes lightboxFadeIn {
+
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
         }
 
-        .lightbox.active img {
-            opacity: 1;
 
-            transform:
-                scale(1)
-                translateY(0);
+        /* =====================================================
+           IMAGE EXPANSION ANIMATION
+           ===================================================== */
+
+        @keyframes lightboxImageIn {
+
+            0% {
+                opacity: 0;
+
+                transform:
+                    scale(0.70)
+                    translateY(25px);
+            }
+
+            70% {
+                opacity: 1;
+
+                transform:
+                    scale(1.03)
+                    translateY(0);
+            }
+
+            100% {
+                opacity: 1;
+
+                transform:
+                    scale(1)
+                    translateY(0);
+            }
         }
 
 
-        /* =========================================================
-           ❌ CLOSE HINT
-        ========================================================= */
+        /* =====================================================
+           CLOSE BUTTON
+           ===================================================== */
 
         .lightbox::after {
-            content: "✕";
+            content: "×";
 
             position: absolute;
 
-            top: 20px;
-            right: 24px;
+            top: 18px;
+            right: 22px;
 
-            width: 40px;
-            height: 40px;
+            width: 42px;
+            height: 42px;
 
             display: flex;
 
-            align-items: center;
             justify-content: center;
+            align-items: center;
 
             border-radius: 50%;
 
-            background: rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.10);
 
-            color: rgba(255, 255, 255, 0.85);
+            color: #FFFFFF;
 
-            font-size: 20px;
-            font-weight: 300;
+            font-size: 28px;
+            font-weight: 200;
 
-            pointer-events: none;
+            cursor: pointer;
 
             opacity: 0;
 
-            transform: scale(0.8);
-
-            transition:
-                opacity 0.3s ease 0.15s,
-                transform 0.3s ease 0.15s;
+            animation:
+                closeButtonIn
+                0.3s
+                ease
+                0.15s
+                forwards;
         }
 
-        .lightbox.active::after {
-            opacity: 1;
-            transform: scale(1);
+        @keyframes closeButtonIn {
+
+            from {
+                opacity: 0;
+                transform: scale(0.7);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
         }
 
 
-        /* =========================================================
-           ⚠️ ERROR MESSAGE
-        ========================================================= */
+        /* =====================================================
+           ERROR
+           ===================================================== */
 
         .error {
             grid-column: 1 / -1;
 
-            color: #999;
-
             padding: 40px 20px;
+
+            color: #999;
         }
 
 
-        /* =========================================================
-           📱 MOBILE LIGHTBOX
-        ========================================================= */
+        /* =====================================================
+           MOBILE LIGHTBOX
+           ===================================================== */
 
         @media (max-width: 600px) {
 
-            .lightbox {
-                padding: 12px;
-            }
-
             .lightbox img {
-                max-width: 96vw;
-                max-height: 84vh;
-
-                border-radius: 6px;
+                max-width: 94%;
+                max-height: 82vh;
             }
 
             .lightbox::after {
-                top: 14px;
-                right: 14px;
-            }
-        }
-
-
-        /* =========================================================
-           ♿ REDUCE MOTION
-        ========================================================= */
-
-        @media (prefers-reduced-motion: reduce) {
-
-            *,
-            *::before,
-            *::after {
-                animation-duration: 0.01ms !important;
-                animation-iteration-count: 1 !important;
-                transition-duration: 0.01ms !important;
+                top: 12px;
+                right: 12px;
             }
         }
     </style>
@@ -351,37 +375,38 @@
     </div>
 
 
-    <!-- =========================================================
-         📸 LIGHTBOX
-    ========================================================= -->
+    <!-- =====================================================
+         LIGHTBOX
+         ===================================================== -->
 
     <div
         id="lightbox"
-        class="lightbox"
-        aria-hidden="true">
+        class="lightbox">
 
         <img
             id="lightboxImg"
             src=""
             alt="Enlarged view">
+
     </div>
 
 
     <script>
 
-        /* =========================================================
-           🛠️ GITHUB CONFIGURATION
-        ========================================================= */
+        /* =====================================================
+           GITHUB CONFIGURATION
+           ===================================================== */
 
         const username = "S7LEONNIE";
+
         const repoName = "testgallery";
 
         const folderPath = "images/client1";
 
 
-        /* =========================================================
-           📸 ELEMENTS
-        ========================================================= */
+        /* =====================================================
+           ELEMENTS
+           ===================================================== */
 
         const grid =
             document.getElementById("photoGrid");
@@ -393,17 +418,17 @@
             document.getElementById("lightboxImg");
 
 
-        /* =========================================================
-           🔗 GITHUB API
-        ========================================================= */
+        /* =====================================================
+           GITHUB API
+           ===================================================== */
 
         const apiURL =
             `https://api.github.com/repos/${username}/${repoName}/contents/${folderPath}`;
 
 
-        /* =========================================================
-           🖼️ SUPPORTED IMAGE TYPES
-        ========================================================= */
+        /* =====================================================
+           IMAGE FORMATS
+           ===================================================== */
 
         const validExtensions = [
             ".jpg",
@@ -414,9 +439,9 @@
         ];
 
 
-        /* =========================================================
-           📥 LOAD PHOTOS
-        ========================================================= */
+        /* =====================================================
+           LOAD PHOTOS
+           ===================================================== */
 
         async function loadPhotos() {
 
@@ -425,6 +450,196 @@
                 const response =
                     await fetch(apiURL);
 
+
                 if (!response.ok) {
-                    throw new E
-```
+
+                    throw new Error(
+                        "Failed to load image folder contents."
+                    );
+
+                }
+
+
+                const files =
+                    await response.json();
+
+
+                files.forEach((file, index) => {
+
+                    const isImage =
+                        validExtensions.some(
+                            ext =>
+                                file.name
+                                    .toLowerCase()
+                                    .endsWith(ext)
+                        );
+
+
+                    if (!isImage) {
+                        return;
+                    }
+
+
+                    /* Create image */
+
+                    const img =
+                        document.createElement("img");
+
+
+                    img.src =
+                        `${folderPath}/${file.name}`;
+
+
+                    img.alt =
+                        file.name;
+
+
+                    img.loading =
+                        "lazy";
+
+
+                    /* Staggered loading */
+
+                    img.style.animationDelay =
+                        `${index * 0.04}s`;
+
+
+                    /* =================================================
+                       OPEN LIGHTBOX
+                       ================================================= */
+
+                    img.addEventListener(
+                        "click",
+                        () => {
+
+                            lightboxImg.src =
+                                img.src;
+
+                            lightboxImg.alt =
+                                img.alt;
+
+
+                            lightbox.classList.add(
+                                "active"
+                            );
+
+
+                            /* Stop page scrolling */
+
+                            document.body.style.overflow =
+                                "hidden";
+                        }
+                    );
+
+
+                    grid.appendChild(img);
+
+                });
+
+            }
+
+            catch (error) {
+
+                console.error(error);
+
+                grid.innerHTML = `
+                    <p class="error">
+                        Oops! Couldn't load the gallery.
+                        Double-check your username
+                        and repo layout settings.
+                    </p>
+                `;
+            }
+        }
+
+
+        /* =====================================================
+           CLOSE LIGHTBOX
+           ===================================================== */
+
+        function closeLightbox() {
+
+            lightbox.classList.remove(
+                "active"
+            );
+
+
+            document.body.style.overflow =
+                "";
+
+
+            /*
+             * Wait for the closing animation before
+             * removing the image.
+             */
+
+            setTimeout(() => {
+
+                if (
+                    !lightbox.classList.contains(
+                        "active"
+                    )
+                ) {
+
+                    lightboxImg.src = "";
+                }
+
+            }, 300);
+        }
+
+
+        /* =====================================================
+           CLICK BACKGROUND TO CLOSE
+           ===================================================== */
+
+        lightbox.addEventListener(
+            "click",
+            (event) => {
+
+                /*
+                 * Clicking the photo itself should NOT close it.
+                 */
+
+                if (
+                    event.target === lightbox
+                ) {
+
+                    closeLightbox();
+
+                }
+
+            }
+        );
+
+
+        /* =====================================================
+           ESC TO CLOSE
+           ===================================================== */
+
+        document.addEventListener(
+            "keydown",
+            (event) => {
+
+                if (
+                    event.key === "Escape" &&
+                    lightbox.classList.contains("active")
+                ) {
+
+                    closeLightbox();
+
+                }
+
+            }
+        );
+
+
+        /* =====================================================
+           START
+           ===================================================== */
+
+        loadPhotos();
+
+    </script>
+
+</body>
+</html>
