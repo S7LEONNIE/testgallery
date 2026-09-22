@@ -1422,14 +1422,11 @@
 
 
                 /* If not zoomed:
-                   visually follow finger */
+                   keep image completely static while
+                   detecting the swipe gesture */
 
-                lightboxImg.style.transition =
-                    "none";
-
-
-                lightboxImg.style.transform =
-                    `translate3d(${deltaX}px, ${deltaY}px, 0)`;
+                lightboxImg.style.transition = "none";
+                lightboxImg.style.transform = "translate3d(0, 0, 0) scale(1)";
 
             },
             {
@@ -1617,10 +1614,14 @@
 
 
                 /* ==========================================
-                   RETURN IMAGE TO CENTER
+                   KEEP IMAGE CENTERED
                 ========================================== */
 
-                applyTransform(true);
+                if (scale === 1) {
+                    lightboxImg.style.transition = "transform 0.2s ease";
+                    lightboxImg.style.transform = "translate3d(0, 0, 0) scale(1)";
+
+                }
 
             },
             {
