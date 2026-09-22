@@ -3,59 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dynamic Photo Gallery</title>
+    <title>Photo Gallery</title>
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #000; color: #fff; margin: 0; padding: 20px; text-align: center; }
         h1 { margin-bottom: 20px; font-weight: 400; }
+        
+        /* Grid Layout */
         .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; max-width: 800px; margin: 0 auto; }
         .gallery-grid img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 8px; cursor: pointer; transition: transform 0.2s; }
         .gallery-grid img:hover { transform: scale(1.03); }
         .error { color: #ff6b6b; margin-top: 20px; }
+
+        /* Lightbox Styling */
+        .lightbox { display: none; position: fixed; z-index: 999; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); justify-content: center; align-items: center; cursor: pointer; }
+        .lightbox img { max-width: 95%; max-height: 90vh; border-radius: 4px; object-fit: contain; }
     </style>
 </head>
 <body>
 
-    <h1>NFC Shared Gallery</h1>
+    <h1 id="galleryTitle">Client Gallery</h1>
 
     <div class="gallery-grid" id="photoGrid"></div>
 
+    <!-- Lightbox element -->
+    <div id="lightbox" class="lightbox">
+        <img id="lightboxImg" src="" alt="Enlarged view">
+    </div>
+
     <script>
-        // 🛠️ CONFIGURATION: Set your info here so the code can talk to GitHub
+        // 🛠️ CONFIGURATION: Set your GitHub username and repo name here
         const username = "S7LEONNIE"; 
         const repoName = "testgallery"; 
-        const folderPath = "images"; // The folder containing photos
+        
+        // 🛠️ FOLDER LOCATION: Change this path depending on the client folder name
+        const folderPath = "images/client1"; 
+        
+        // 🛠️ PAGE TITLE: What you want displayed at the top of the webpage
+        document.getElementById('galleryTitle').innerText = "Welcome, Client One!";
 
         const grid = document.getElementById('photoGrid');
-        const apiURL = `https://api.github.com/repos/${username}/${repoName}/contents/${folderPath}`;
-
-        // Supported image formats
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightboxImg');
+        const apiURL = `https://github.com{username}/${repoName}/contents/${folderPath}`;
         const validExtensions = ['.jpg', '.jpeg', '.png', '.webp', '.gif'];
 
         async function loadPhotos() {
             try {
                 const response = await fetch(apiURL);
-                if (!response.ok) throw new Error("Failed to load image folder contents.");
-                
+                if (!response.ok) throw new Error("Failed to load contents.");
                 const files = await response.json();
 
                 files.forEach(file => {
-                    // Check if the file is an image by looking at its extension
                     const isImage = validExtensions.some(ext => file.name.toLowerCase().endsWith(ext));
-                    
                     if (isImage) {
                         const img = document.createElement('img');
-                        // Use GitHub Pages path to serve the raw photo file
                         img.src = `${folderPath}/${file.name}`;
                         img.alt = file.name;
                         img.loading = "lazy";
+                        
+                        // Open lightbox on tap
+                        img.addEventListener('click', () => {
+                            lightboxImg.src = img.src;
+                            lightbox.style.display = 'flex';
+                        });
+
                         grid.appendChild(img);
                     }
                 });
             } catch (error) {
                 console.error(error);
-                grid.innerHTML = `<p class="error">Oops! Couldn't load the gallery. Double-check your username and repo layout settings.</p>`;
+                grid.innerHTML = `<p class="error">Oops! Couldn't load the gallery. Please check your config settings.</p>`;
             }
         }
+
+        // Close lightbox when tapping anywhere on the overlay
+        lightbox.addEventListener('click', () => {
+            lightbox.style.display = 'none';
+            lightboxImg.src = '';
+        });
 
         loadPhotos();
     </script>
