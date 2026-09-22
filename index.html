@@ -26,7 +26,7 @@
             display: grid; 
             grid-template-columns: repeat(3, 1fr); 
             gap: 8px; 
-            max-width: 600px; 
+            max-width: 100%; 
             margin: 0 auto; 
         }
         .gallery-grid img { 
@@ -108,7 +108,6 @@
         const grid = document.getElementById('photoGrid');
         const lightbox = document.getElementById('lightbox');
         const lightboxImg = document.getElementById('lightboxImg');
-        let delay = 0;
         
         // This is your exact working API URL structure:
         const apiURL = `https://api.github.com/repos/${username}/${repoName}/contents/${folderPath}`;
@@ -132,18 +131,11 @@
                         img.src = `${folderPath}/${file.name}`;
                         img.alt = file.name;
                         img.loading = "lazy";
-
-                        img.style.animationDelay = `${delay}s`;
-                        delay += 0.04;
-                        
-                        img.addEventListener('click', () => {
-                            lightboxImg.src = img.src;
-                            lightbox.classList.add('active');
                         
                         // 📸 Open lightbox on tap/click
-                        //img.addEventListener('click', () => {
-                          //  lightboxImg.src = img.src;
-                            //lightbox.style.display = 'flex';
+                        img.addEventListener('click', () => {
+                            lightboxImg.src = img.src;
+                            lightbox.style.display = 'flex';
                         });
 
                         grid.appendChild(img);
