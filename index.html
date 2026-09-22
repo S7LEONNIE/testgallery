@@ -74,7 +74,6 @@
             opacity: 0.9;
         }
 
-        /* Tablet */
         @media (min-width: 600px) {
             .gallery {
                 grid-template-columns: repeat(4, 1fr);
@@ -84,14 +83,12 @@
             }
         }
 
-        /* Desktop */
         @media (min-width: 900px) {
             .gallery {
                 grid-template-columns: repeat(5, 1fr);
             }
         }
 
-        /* Large desktop */
         @media (min-width: 1300px) {
             .gallery {
                 grid-template-columns: repeat(6, 1fr);
@@ -119,6 +116,8 @@
             z-index: 9999;
 
             opacity: 0;
+
+            touch-action: none;
         }
 
         .lightbox.active {
@@ -141,7 +140,15 @@
             justify-content: center;
 
             padding: 70px 80px;
+
+            overflow: hidden;
+
+            touch-action: none;
         }
+
+        /* =========================
+           LIGHTBOX IMAGE
+        ========================= */
 
         #lightboxImg {
             max-width: 100%;
@@ -155,8 +162,19 @@
             user-select: none;
             -webkit-user-select: none;
 
+            cursor: default;
+
+            transform:
+                translate3d(0, 0, 0)
+                scale(1);
+
+            transform-origin: center center;
+
             opacity: 0;
-            transform: scale(0.96);
+
+            will-change:
+                transform,
+                opacity;
 
             transition:
                 opacity 0.2s ease,
@@ -165,7 +183,6 @@
 
         #lightboxImg.show {
             opacity: 1;
-            transform: scale(1);
         }
 
         /* =========================
@@ -192,17 +209,23 @@
 
             cursor: pointer;
 
-            z-index: 10;
+            z-index: 20;
 
             display: flex;
             align-items: center;
             justify-content: center;
 
-            transition: background 0.2s ease;
+            transition:
+                background 0.2s ease,
+                transform 0.2s ease;
         }
 
         .close-button:hover {
             background: rgba(255, 255, 255, 0.28);
+        }
+
+        .close-button:active {
+            transform: scale(0.92);
         }
 
         /* =========================
@@ -229,17 +252,23 @@
 
             cursor: pointer;
 
-            z-index: 10;
+            z-index: 20;
 
             display: flex;
             align-items: center;
             justify-content: center;
 
-            transition: background 0.2s ease;
+            transition:
+                background 0.2s ease,
+                transform 0.15s ease;
         }
 
         .nav-button:hover {
             background: rgba(255, 255, 255, 0.28);
+        }
+
+        .nav-button:active {
+            transform: translateY(-50%) scale(0.92);
         }
 
         .prev-button {
@@ -272,11 +301,13 @@
 
             border-radius: 20px;
 
-            z-index: 10;
+            z-index: 20;
+
+            pointer-events: none;
         }
 
         /* =========================
-           MOBILE LIGHTBOX
+           MOBILE
         ========================= */
 
         @media (max-width: 600px) {
@@ -368,12 +399,16 @@
         </button>
 
 
-        <div class="lightbox-content">
+        <div
+            id="lightboxContent"
+            class="lightbox-content"
+        >
 
             <img
                 id="lightboxImg"
                 src=""
                 alt="Enlarged memory"
+                draggable="false"
             >
 
         </div>
@@ -434,6 +469,9 @@
         const lightbox =
             document.getElementById("lightbox");
 
+        const lightboxContent =
+            document.getElementById("lightboxContent");
+
         const lightboxImg =
             document.getElementById("lightboxImg");
 
@@ -459,6 +497,71 @@
         let currentIndex = 0;
 
 
+        /* Zoom */
+
+        let scale = 1;
+
+        let translateX = 0;
+
+        let translateY = 0;
+
+        const MIN_SCALE = 1;
+
+        const MAX_SCALE = 4;
+
+
+        /* Touch */
+
+        let touchStartX = 0;
+
+        let touchStartY = 0;
+
+        let touchCurrentX = 0;
+
+        let touchCurrentY = 0;
+
+        let touchStartTime = 0;
+
+        let isTouching = false;
+
+        let isPinching = false;
+
+        let initialPinchDistance = 0;
+
+        let initialPinchScale = 1;
+
+        let initialPinchCenterX = 0;
+
+        let initialPinchCenterY = 0;
+
+
+        /* Double tap */
+
+        let lastTapTime = 0;
+
+        let lastTapX = 0;
+
+        let lastTapY = 0;
+
+
+        /* Dragging */
+
+        let isDragging = false;
+
+        let dragStartX = 0;
+
+        let dragStartY = 0;
+
+        let dragStartTranslateX = 0;
+
+        let dragStartTranslateY = 0;
+
+
+        /* Navigation animation */
+
+        let isAnimating = false;
+
+
         /* =====================================================
            LOAD PHOTOS FROM GITHUB
         ===================================================== */
@@ -474,16 +577,16 @@
                     await fetch(apiUrl);
 
                 if (!response.ok) {
+
                     throw new Error(
                         `GitHub error: ${response.status}`
                     );
+
                 }
 
                 const files =
                     await response.json();
 
-
-                /* Keep only image files */
 
                 photos = files.filter(file => {
 
@@ -502,21 +605,18 @@
                 });
 
 
-                /* Sort alphabetically */
-
                 photos.sort((a, b) =>
                     a.name.localeCompare(b.name)
                 );
 
-
-                /* Display thumbnails */
 
                 photos.forEach((photo, index) => {
 
                     const img =
                         document.createElement("img");
 
-                    img.src = photo.download_url;
+                    img.src =
+                        photo.download_url;
 
                     img.alt =
                         `Memory ${index + 1}`;
@@ -544,8 +644,6 @@
 
                 });
 
-
-                /* If there are no photos */
 
                 if (photos.length === 0) {
 
@@ -585,6 +683,9 @@
             currentIndex = index;
 
 
+            resetZoom();
+
+
             updateLightbox();
 
 
@@ -607,13 +708,13 @@
                 photos[currentIndex];
 
 
-            /* Hide current image briefly
-               so it animates when changed */
-
-            lightboxImg.classList.remove("show");
+            resetZoom();
 
 
-            /* Change image */
+            lightboxImg.classList.remove(
+                "show"
+            );
+
 
             lightboxImg.src =
                 photo.download_url;
@@ -622,13 +723,9 @@
                 photo.name;
 
 
-            /* Counter */
-
             photoCounter.textContent =
                 `${currentIndex + 1} / ${photos.length}`;
 
-
-            /* Previous button */
 
             if (currentIndex === 0) {
 
@@ -643,9 +740,10 @@
             }
 
 
-            /* Next button */
-
-            if (currentIndex === photos.length - 1) {
+            if (
+                currentIndex ===
+                photos.length - 1
+            ) {
 
                 nextButton.style.display =
                     "none";
@@ -657,8 +755,6 @@
 
             }
 
-
-            /* Animate image once loaded */
 
             lightboxImg.onload = () => {
 
@@ -673,7 +769,16 @@
             };
 
 
-            /* Preload previous image */
+            preloadAdjacentImages();
+
+        }
+
+
+        /* =====================================================
+           PRELOAD ADJACENT IMAGES
+        ===================================================== */
+
+        function preloadAdjacentImages() {
 
             if (currentIndex > 0) {
 
@@ -681,22 +786,25 @@
                     new Image();
 
                 previousImage.src =
-                    photos[currentIndex - 1]
-                        .download_url;
+                    photos[
+                        currentIndex - 1
+                    ].download_url;
 
             }
 
 
-            /* Preload next image */
-
-            if (currentIndex < photos.length - 1) {
+            if (
+                currentIndex <
+                photos.length - 1
+            ) {
 
                 const nextImage =
                     new Image();
 
                 nextImage.src =
-                    photos[currentIndex + 1]
-                        .download_url;
+                    photos[
+                        currentIndex + 1
+                    ].download_url;
 
             }
 
@@ -710,15 +818,22 @@
         function showNext() {
 
             if (
-                currentIndex <
+                currentIndex >=
                 photos.length - 1
             ) {
-
-                currentIndex++;
-
-                updateLightbox();
-
+                return;
             }
+
+
+            if (isAnimating) {
+                return;
+            }
+
+
+            navigateTo(
+                currentIndex + 1,
+                "next"
+            );
 
         }
 
@@ -729,13 +844,106 @@
 
         function showPrevious() {
 
-            if (currentIndex > 0) {
+            if (currentIndex <= 0) {
+                return;
+            }
 
-                currentIndex--;
+
+            if (isAnimating) {
+                return;
+            }
+
+
+            navigateTo(
+                currentIndex - 1,
+                "previous"
+            );
+
+        }
+
+
+        /* =====================================================
+           NAVIGATION ANIMATION
+        ===================================================== */
+
+        function navigateTo(
+            newIndex,
+            direction
+        ) {
+
+            if (
+                newIndex < 0 ||
+                newIndex >= photos.length
+            ) {
+                return;
+            }
+
+
+            isAnimating = true;
+
+
+            const directionMultiplier =
+                direction === "next"
+                    ? -1
+                    : 1;
+
+
+            lightboxImg.style.transition =
+                "transform 0.18s ease, opacity 0.18s ease";
+
+
+            lightboxImg.style.transform =
+                `translate3d(${directionMultiplier * 80}px, 0, 0) scale(${scale})`;
+
+            lightboxImg.style.opacity =
+                "0";
+
+
+            setTimeout(() => {
+
+                currentIndex =
+                    newIndex;
+
+
+                scale = 1;
+
+                translateX = 0;
+
+                translateY = 0;
+
+
+                lightboxImg.style.transition =
+                    "none";
+
+
+                lightboxImg.style.transform =
+                    `translate3d(${directionMultiplier * -80}px, 0, 0) scale(1)`;
+
 
                 updateLightbox();
 
-            }
+
+                requestAnimationFrame(() => {
+
+                    lightboxImg.style.transition =
+                        "transform 0.22s ease, opacity 0.22s ease";
+
+                    lightboxImg.style.transform =
+                        "translate3d(0, 0, 0) scale(1)";
+
+                    lightboxImg.style.opacity =
+                        "1";
+
+                });
+
+
+                setTimeout(() => {
+
+                    isAnimating = false;
+
+                }, 230);
+
+            }, 180);
 
         }
 
@@ -750,12 +958,750 @@
                 "active"
             );
 
+
             document.body.style.overflow =
                 "";
 
-            lightboxImg.classList.remove(
-                "show"
+
+            resetZoom();
+
+        }
+
+
+        /* =====================================================
+           RESET ZOOM
+        ===================================================== */
+
+        function resetZoom() {
+
+            scale = 1;
+
+            translateX = 0;
+
+            translateY = 0;
+
+
+            lightboxImg.style.transition =
+                "transform 0.2s ease";
+
+
+            lightboxImg.style.transform =
+                "translate3d(0, 0, 0) scale(1)";
+
+        }
+
+
+        /* =====================================================
+           APPLY TRANSFORM
+        ===================================================== */
+
+        function applyTransform(
+            animated = false
+        ) {
+
+            lightboxImg.style.transition =
+                animated
+                    ? "transform 0.2s ease"
+                    : "none";
+
+
+            lightboxImg.style.transform =
+                `translate3d(${translateX}px, ${translateY}px, 0) scale(${scale})`;
+
+        }
+
+
+        /* =====================================================
+           DOUBLE TAP ZOOM
+        ===================================================== */
+
+        function toggleDoubleTapZoom(
+            x,
+            y
+        ) {
+
+            if (scale === 1) {
+
+                scale = 2.5;
+
+                translateX = 0;
+
+                translateY = 0;
+
+                applyTransform(true);
+
+            } else {
+
+                resetZoom();
+
+            }
+
+        }
+
+
+        /* =====================================================
+           MOUSE WHEEL ZOOM
+        ===================================================== */
+
+        lightboxContent.addEventListener(
+            "wheel",
+            (event) => {
+
+                if (
+                    !lightbox.classList.contains(
+                        "active"
+                    )
+                ) {
+                    return;
+                }
+
+
+                event.preventDefault();
+
+
+                const zoomAmount =
+                    event.deltaY < 0
+                        ? 0.25
+                        : -0.25;
+
+
+                scale += zoomAmount;
+
+
+                scale = Math.max(
+                    MIN_SCALE,
+                    Math.min(
+                        MAX_SCALE,
+                        scale
+                    )
+                );
+
+
+                if (scale === 1) {
+
+                    translateX = 0;
+
+                    translateY = 0;
+
+                }
+
+
+                applyTransform(true);
+
+            },
+            {
+                passive: false
+            }
+        );
+
+
+        /* =====================================================
+           DESKTOP MOUSE DRAG
+        ===================================================== */
+
+        lightboxImg.addEventListener(
+            "mousedown",
+            (event) => {
+
+                if (scale <= 1) {
+                    return;
+                }
+
+
+                event.preventDefault();
+
+
+                isDragging = true;
+
+
+                dragStartX =
+                    event.clientX;
+
+                dragStartY =
+                    event.clientY;
+
+
+                dragStartTranslateX =
+                    translateX;
+
+                dragStartTranslateY =
+                    translateY;
+
+
+                lightboxImg.style.cursor =
+                    "grabbing";
+
+            }
+        );
+
+
+        document.addEventListener(
+            "mousemove",
+            (event) => {
+
+                if (!isDragging) {
+                    return;
+                }
+
+
+                translateX =
+                    dragStartTranslateX +
+                    (
+                        event.clientX -
+                        dragStartX
+                    );
+
+
+                translateY =
+                    dragStartTranslateY +
+                    (
+                        event.clientY -
+                        dragStartY
+                    );
+
+
+                applyTransform(false);
+
+            }
+        );
+
+
+        document.addEventListener(
+            "mouseup",
+            () => {
+
+                if (!isDragging) {
+                    return;
+                }
+
+
+                isDragging = false;
+
+
+                lightboxImg.style.cursor =
+                    "default";
+
+            }
+        );
+
+
+        /* =====================================================
+           TOUCH START
+        ===================================================== */
+
+        lightboxContent.addEventListener(
+            "touchstart",
+            (event) => {
+
+                if (
+                    !lightbox.classList.contains(
+                        "active"
+                    )
+                ) {
+                    return;
+                }
+
+
+                if (
+                    event.touches.length === 2
+                ) {
+
+                    isPinching = true;
+
+                    isTouching = false;
+
+
+                    initialPinchDistance =
+                        getTouchDistance(
+                            event.touches[0],
+                            event.touches[1]
+                        );
+
+
+                    initialPinchScale =
+                        scale;
+
+
+                    const center =
+                        getTouchCenter(
+                            event.touches[0],
+                            event.touches[1]
+                        );
+
+
+                    initialPinchCenterX =
+                        center.x;
+
+                    initialPinchCenterY =
+                        center.y;
+
+
+                    return;
+
+                }
+
+
+                if (
+                    event.touches.length !== 1
+                ) {
+                    return;
+                }
+
+
+                const touch =
+                    event.touches[0];
+
+
+                touchStartX =
+                    touch.clientX;
+
+                touchStartY =
+                    touch.clientY;
+
+
+                touchCurrentX =
+                    touch.clientX;
+
+                touchCurrentY =
+                    touch.clientY;
+
+
+                touchStartTime =
+                    Date.now();
+
+
+                isTouching = true;
+
+
+                if (scale > 1) {
+
+                    isDragging = true;
+
+                    dragStartX =
+                        touch.clientX;
+
+                    dragStartY =
+                        touch.clientY;
+
+                    dragStartTranslateX =
+                        translateX;
+
+                    dragStartTranslateY =
+                        translateY;
+
+                }
+
+            },
+            {
+                passive: false
+            }
+        );
+
+
+        /* =====================================================
+           TOUCH MOVE
+        ===================================================== */
+
+        lightboxContent.addEventListener(
+            "touchmove",
+            (event) => {
+
+                event.preventDefault();
+
+
+                /* PINCH */
+
+                if (
+                    event.touches.length === 2
+                ) {
+
+                    isPinching = true;
+
+
+                    const currentDistance =
+                        getTouchDistance(
+                            event.touches[0],
+                            event.touches[1]
+                        );
+
+
+                    if (
+                        initialPinchDistance === 0
+                    ) {
+                        return;
+                    }
+
+
+                    const pinchRatio =
+                        currentDistance /
+                        initialPinchDistance;
+
+
+                    scale =
+                        initialPinchScale *
+                        pinchRatio;
+
+
+                    scale = Math.max(
+                        MIN_SCALE,
+                        Math.min(
+                            MAX_SCALE,
+                            scale
+                        )
+                    );
+
+
+                    if (scale === 1) {
+
+                        translateX = 0;
+
+                        translateY = 0;
+
+                    }
+
+
+                    applyTransform(false);
+
+
+                    return;
+
+                }
+
+
+                /* SINGLE FINGER */
+
+                if (
+                    event.touches.length !== 1 ||
+                    !isTouching
+                ) {
+                    return;
+                }
+
+
+                const touch =
+                    event.touches[0];
+
+
+                touchCurrentX =
+                    touch.clientX;
+
+                touchCurrentY =
+                    touch.clientY;
+
+
+                const deltaX =
+                    touchCurrentX -
+                    touchStartX;
+
+
+                const deltaY =
+                    touchCurrentY -
+                    touchStartY;
+
+
+                /* If zoomed:
+                   drag image */
+
+                if (scale > 1) {
+
+                    translateX =
+                        dragStartTranslateX +
+                        deltaX;
+
+                    translateY =
+                        dragStartTranslateY +
+                        deltaY;
+
+
+                    applyTransform(false);
+
+
+                    return;
+
+                }
+
+
+                /* If not zoomed:
+                   visually follow finger */
+
+                lightboxImg.style.transition =
+                    "none";
+
+
+                lightboxImg.style.transform =
+                    `translate3d(${deltaX}px, ${deltaY}px, 0)`;
+
+            },
+            {
+                passive: false
+            }
+        );
+
+
+        /* =====================================================
+           TOUCH END
+        ===================================================== */
+
+        lightboxContent.addEventListener(
+            "touchend",
+            (event) => {
+
+                if (isPinching) {
+
+                    if (
+                        scale <= 1
+                    ) {
+
+                        resetZoom();
+
+                    }
+
+
+                    isPinching = false;
+
+                    isTouching = false;
+
+                    isDragging = false;
+
+                    return;
+
+                }
+
+
+                if (!isTouching) {
+                    return;
+                }
+
+
+                const deltaX =
+                    touchCurrentX -
+                    touchStartX;
+
+                const deltaY =
+                    touchCurrentY -
+                    touchStartY;
+
+
+                const distance =
+                    Math.sqrt(
+                        deltaX * deltaX +
+                        deltaY * deltaY
+                    );
+
+
+                const duration =
+                    Date.now() -
+                    touchStartTime;
+
+
+                isTouching = false;
+
+
+                /* ==========================================
+                   ZOOMED IMAGE
+                ========================================== */
+
+                if (scale > 1) {
+
+                    isDragging = false;
+
+                    return;
+
+                }
+
+
+                /* ==========================================
+                   DOUBLE TAP
+                ========================================== */
+
+                const now =
+                    Date.now();
+
+
+                const timeSinceLastTap =
+                    now - lastTapTime;
+
+
+                const distanceFromLastTap =
+                    Math.sqrt(
+                        Math.pow(
+                            touchStartX -
+                            lastTapX,
+                            2
+                        ) +
+                        Math.pow(
+                            touchStartY -
+                            lastTapY,
+                            2
+                        )
+                    );
+
+
+                if (
+                    timeSinceLastTap < 300 &&
+                    distanceFromLastTap < 40
+                ) {
+
+                    toggleDoubleTapZoom(
+                        touchStartX,
+                        touchStartY
+                    );
+
+
+                    lastTapTime = 0;
+
+                    return;
+
+                }
+
+
+                lastTapTime = now;
+
+                lastTapX = touchStartX;
+
+                lastTapY = touchStartY;
+
+
+                /* ==========================================
+                   SWIPE
+                ========================================== */
+
+                const horizontalSwipe =
+                    Math.abs(deltaX) > 60 &&
+                    Math.abs(deltaX) >
+                        Math.abs(deltaY);
+
+
+                const verticalSwipe =
+                    Math.abs(deltaY) > 80 &&
+                    Math.abs(deltaY) >
+                        Math.abs(deltaX);
+
+
+                if (
+                    horizontalSwipe &&
+                    duration < 700
+                ) {
+
+                    if (deltaX < 0) {
+
+                        showNext();
+
+                    } else {
+
+                        showPrevious();
+
+                    }
+
+
+                    return;
+
+                }
+
+
+                /* ==========================================
+                   SWIPE DOWN TO CLOSE
+                ========================================== */
+
+                if (
+                    verticalSwipe &&
+                    deltaY > 80 &&
+                    duration < 700
+                ) {
+
+                    closeLightbox();
+
+                    return;
+
+                }
+
+
+                /* ==========================================
+                   RETURN IMAGE TO CENTER
+                ========================================== */
+
+                applyTransform(true);
+
+            },
+            {
+                passive: false
+            }
+        );
+
+
+        /* =====================================================
+           TOUCH CANCEL
+        ===================================================== */
+
+        lightboxContent.addEventListener(
+            "touchcancel",
+            () => {
+
+                isTouching = false;
+
+                isPinching = false;
+
+                isDragging = false;
+
+
+                if (scale === 1) {
+                    applyTransform(true);
+                }
+
+            }
+        );
+
+
+        /* =====================================================
+           TOUCH DISTANCE
+        ===================================================== */
+
+        function getTouchDistance(
+            touch1,
+            touch2
+        ) {
+
+            const dx =
+                touch1.clientX -
+                touch2.clientX;
+
+            const dy =
+                touch1.clientY -
+                touch2.clientY;
+
+
+            return Math.sqrt(
+                dx * dx +
+                dy * dy
             );
+
+        }
+
+
+        /* =====================================================
+           TOUCH CENTER
+        ===================================================== */
+
+        function getTouchCenter(
+            touch1,
+            touch2
+        ) {
+
+            return {
+
+                x:
+                    (
+                        touch1.clientX +
+                        touch2.clientX
+                    ) / 2,
+
+                y:
+                    (
+                        touch1.clientY +
+                        touch2.clientY
+                    ) / 2
+
+            };
 
         }
 
@@ -803,15 +1749,12 @@
 
 
         /* =====================================================
-           KEYBOARD CONTROLS
+           KEYBOARD
         ===================================================== */
 
         document.addEventListener(
             "keydown",
             (event) => {
-
-                /* Don't do anything if
-                   lightbox isn't open */
 
                 if (
                     !lightbox.classList.contains(
@@ -830,6 +1773,8 @@
 
                     closeLightbox();
 
+                    return;
+
                 }
 
 
@@ -839,6 +1784,8 @@
 
                     showNext();
 
+                    return;
+
                 }
 
 
@@ -847,6 +1794,8 @@
                 ) {
 
                     showPrevious();
+
+                    return;
 
                 }
 
