@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photo Gallery</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #000; color: #fff; margin: 0; padding: 20px; text-align: center; }
+        h1 { margin-bottom: 20px; font-weight: 400; }
+        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; max-width: 800px; margin: 0 auto; }
+        .gallery-grid img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 8px; cursor: pointer; transition: transform 0.2s; }
+        .gallery-grid img:hover { transform: scale(1.03); }
+    </style>
+</head>
+<body>
+
+    <h1>Welcome Gallery</h1>
+
+    <div class="gallery-grid">
+        <!-- Add as many images as you need below. Match your uploaded filenames exactly! -->
+        <img src="images/photo1.jpg" alt="Photo 1">
+        <img src="images/photo2.jpg" alt="Photo 2">
+        <img src="images/photo3.png" alt="Photo 3">
+    </div>
+
+</body>
+</html>
