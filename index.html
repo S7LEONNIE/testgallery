@@ -26,6 +26,8 @@
         const folderPath = "images/client1"; // The folder containing photos
 
         const grid = document.getElementById('photoGrid');
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElemenetById('lightboxImg');
         const apiURL = `https://api.github.com/repos/${username}/${repoName}/contents/${folderPath}`;
 
         // Supported image formats
@@ -48,6 +50,13 @@
                         img.src = `${folderPath}/${file.name}`;
                         img.alt = file.name;
                         img.loading = "lazy";
+
+                        // 📸 Open lightbox on tap/click
+                        img.addEventListener('click', () => {
+                            lightboxImg.src = img.src;
+                            lightbox.style.display = 'flex';
+                        });
+                        
                         grid.appendChild(img);
                     }
                 });
@@ -56,6 +65,12 @@
                 grid.innerHTML = `<p class="error">Oops! Couldn't load the gallery. Double-check your username and repo layout settings.</p>`;
             }
         }
+
+        // 📸 Close lightbox when tapping anywhere on the black overlay
+        lightbox.addEventListener('click', () => {
+            lightbox.style.display = 'none';
+            lightboxImg.src = '';
+        });
 
         loadPhotos();
     </script>
