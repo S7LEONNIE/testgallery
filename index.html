@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -108,4 +107,1723 @@
             transform: scale(0.96);
         }
 
-```
+
+        /* =====================================================
+           RESPONSIVE GRID
+        ===================================================== */
+
+        @media (min-width: 600px) {
+
+            .gallery-grid {
+                grid-template-columns:
+                    repeat(4, minmax(0, 1fr));
+
+                gap: 10px;
+            }
+        }
+
+
+        @media (min-width: 900px) {
+
+            .gallery-grid {
+                grid-template-columns:
+                    repeat(5, minmax(0, 1fr));
+
+                gap: 12px;
+            }
+        }
+
+
+        @media (min-width: 1300px) {
+
+            .gallery-grid {
+                grid-template-columns:
+                    repeat(6, minmax(0, 1fr));
+            }
+        }
+
+
+        /* =====================================================
+           THUMBNAIL ENTRANCE
+        ===================================================== */
+
+        @keyframes fadeInUp {
+
+            from {
+                opacity: 0;
+
+                transform:
+                    translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+
+                transform:
+                    translateY(0);
+            }
+        }
+
+
+        /* =====================================================
+           LIGHTBOX
+        ===================================================== */
+
+        .lightbox {
+
+            display: none;
+
+            position: fixed;
+
+            z-index: 9999;
+
+            inset: 0;
+
+            width: 100%;
+            height: 100%;
+
+            background:
+                rgba(5, 5, 5, 0.95);
+
+            backdrop-filter:
+                blur(10px);
+
+            -webkit-backdrop-filter:
+                blur(10px);
+
+            justify-content: center;
+            align-items: center;
+
+            overflow: hidden;
+
+            touch-action: none;
+
+            opacity: 0;
+        }
+
+
+        .lightbox.active {
+
+            display: flex;
+
+            animation:
+                lightboxFadeIn
+                0.25s
+                ease
+                forwards;
+        }
+
+
+        /* =====================================================
+           IMAGE VIEWPORT
+        ===================================================== */
+
+        .lightbox-viewport {
+
+            position: relative;
+
+            width: 100%;
+            height: 100%;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            overflow: hidden;
+
+            touch-action: none;
+        }
+
+
+        /* =====================================================
+           LIGHTBOX IMAGE
+        ===================================================== */
+
+        .lightbox img {
+
+            position: absolute;
+
+            max-width: 88vw;
+            max-height: 82vh;
+
+            width: auto;
+            height: auto;
+
+            object-fit: contain;
+
+            border-radius: 8px;
+
+            user-select: none;
+            -webkit-user-select: none;
+
+            -webkit-user-drag: none;
+
+            cursor: zoom-in;
+
+            transform:
+                translate3d(0, 0, 0)
+                scale(1);
+
+            transform-origin: center center;
+
+            opacity: 1;
+
+            box-shadow:
+                0 20px 70px
+                rgba(0, 0, 0, 0.65);
+
+            will-change:
+                transform,
+                opacity;
+
+            transition:
+                transform 0.28s
+                cubic-bezier(0.22, 1, 0.36, 1),
+                opacity 0.2s ease;
+        }
+
+
+        /* =====================================================
+           IMAGE OPENING ANIMATION
+        ===================================================== */
+
+        .lightbox.opening img {
+
+            animation:
+                imageOpen
+                0.4s
+                cubic-bezier(
+                    0.22,
+                    1,
+                    0.36,
+                    1
+                );
+        }
+
+
+        @keyframes imageOpen {
+
+            0% {
+
+                opacity: 0;
+
+                transform:
+                    scale(0.72)
+                    translateY(20px);
+            }
+
+            70% {
+
+                opacity: 1;
+
+                transform:
+                    scale(1.03)
+                    translateY(0);
+            }
+
+            100% {
+
+                opacity: 1;
+
+                transform:
+                    scale(1)
+                    translateY(0);
+            }
+        }
+
+
+        /* =====================================================
+           NAVIGATION ARROWS
+        ===================================================== */
+
+        .nav-button {
+
+            position: absolute;
+
+            top: 50%;
+
+            transform:
+                translateY(-50%);
+
+            z-index: 10;
+
+            width: 48px;
+            height: 48px;
+
+            border: none;
+
+            border-radius: 50%;
+
+            display: flex;
+
+            justify-content: center;
+            align-items: center;
+
+            background:
+                rgba(255, 255, 255, 0.12);
+
+            color: white;
+
+            font-size: 28px;
+
+            font-weight: 200;
+
+            cursor: pointer;
+
+            backdrop-filter:
+                blur(8px);
+
+            -webkit-backdrop-filter:
+                blur(8px);
+
+            transition:
+                background 0.2s ease,
+                transform 0.2s ease,
+                opacity 0.2s ease;
+        }
+
+
+        .nav-button:hover {
+
+            background:
+                rgba(255, 255, 255, 0.22);
+        }
+
+
+        .nav-button:active {
+
+            transform:
+                translateY(-50%)
+                scale(0.9);
+        }
+
+
+        .prev-button {
+            left: 18px;
+        }
+
+
+        .next-button {
+            right: 18px;
+        }
+
+
+        /* =====================================================
+           PHOTO COUNTER
+        ===================================================== */
+
+        .photo-counter {
+
+            position: absolute;
+
+            top: 18px;
+            left: 50%;
+
+            transform:
+                translateX(-50%);
+
+            z-index: 20;
+
+            padding: 7px 13px;
+
+            border-radius: 20px;
+
+            background:
+                rgba(0, 0, 0, 0.45);
+
+            color:
+                rgba(255, 255, 255, 0.9);
+
+            font-size: 13px;
+
+            letter-spacing: 0.5px;
+
+            backdrop-filter:
+                blur(8px);
+
+            -webkit-backdrop-filter:
+                blur(8px);
+
+            pointer-events: none;
+        }
+
+
+        /* =====================================================
+           CLOSE BUTTON
+        ===================================================== */
+
+        .close-button {
+
+            position: absolute;
+
+            top: 16px;
+            right: 18px;
+
+            z-index: 20;
+
+            width: 44px;
+            height: 44px;
+
+            border: none;
+
+            border-radius: 50%;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            background:
+                rgba(255, 255, 255, 0.10);
+
+            color: white;
+
+            font-size: 28px;
+
+            font-weight: 200;
+
+            cursor: pointer;
+
+            transition:
+                background 0.2s ease,
+                transform 0.2s ease;
+        }
+
+
+        .close-button:hover {
+
+            background:
+                rgba(255, 255, 255, 0.20);
+        }
+
+
+        .close-button:active {
+
+            transform:
+                scale(0.9);
+        }
+
+
+        /* =====================================================
+           SLIDE ANIMATIONS
+        ===================================================== */
+
+        .slide-out-left {
+
+            animation:
+                slideOutLeft
+                0.22s
+                ease
+                forwards;
+        }
+
+
+        .slide-out-right {
+
+            animation:
+                slideOutRight
+                0.22s
+                ease
+                forwards;
+        }
+
+
+        .slide-in-left {
+
+            animation:
+                slideInLeft
+                0.28s
+                cubic-bezier(
+                    0.22,
+                    1,
+                    0.36,
+                    1
+                )
+                forwards;
+        }
+
+
+        .slide-in-right {
+
+            animation:
+                slideInRight
+                0.28s
+                cubic-bezier(
+                    0.22,
+                    1,
+                    0.36,
+                    1
+                )
+                forwards;
+        }
+
+
+        @keyframes slideOutLeft {
+
+            to {
+
+                opacity: 0;
+
+                transform:
+                    translate3d(-35vw, 0, 0)
+                    scale(0.96);
+            }
+        }
+
+
+        @keyframes slideOutRight {
+
+            to {
+
+                opacity: 0;
+
+                transform:
+                    translate3d(35vw, 0, 0)
+                    scale(0.96);
+            }
+        }
+
+
+        @keyframes slideInLeft {
+
+            from {
+
+                opacity: 0;
+
+                transform:
+                    translate3d(35vw, 0, 0)
+                    scale(0.96);
+            }
+
+            to {
+
+                opacity: 1;
+
+                transform:
+                    translate3d(0, 0, 0)
+                    scale(1);
+            }
+        }
+
+
+        @keyframes slideInRight {
+
+            from {
+
+                opacity: 0;
+
+                transform:
+                    translate3d(-35vw, 0, 0)
+                    scale(0.96);
+            }
+
+            to {
+
+                opacity: 1;
+
+                transform:
+                    translate3d(0, 0, 0)
+                    scale(1);
+            }
+        }
+
+
+        /* =====================================================
+           ERROR
+        ===================================================== */
+
+        .error {
+
+            grid-column:
+                1 / -1;
+
+            padding:
+                40px 20px;
+
+            color:
+                #999;
+        }
+
+
+        /* =====================================================
+           MOBILE
+        ===================================================== */
+
+        @media (max-width: 600px) {
+
+            .lightbox {
+
+                background:
+                    rgba(0, 0, 0, 0.98);
+
+                backdrop-filter:
+                    blur(5px);
+
+                -webkit-backdrop-filter:
+                    blur(5px);
+            }
+
+
+            .lightbox img {
+
+                max-width: 94vw;
+                max-height: 84vh;
+
+                border-radius: 5px;
+            }
+
+
+            .nav-button {
+
+                width: 40px;
+                height: 40px;
+
+                background:
+                    rgba(255, 255, 255, 0.08);
+
+                font-size: 22px;
+            }
+
+
+            .prev-button {
+                left: 8px;
+            }
+
+
+            .next-button {
+                right: 8px;
+            }
+
+
+            .close-button {
+
+                top: 10px;
+                right: 10px;
+
+                width: 40px;
+                height: 40px;
+
+                font-size: 25px;
+            }
+
+
+            .photo-counter {
+
+                top: 13px;
+
+                font-size: 12px;
+
+                padding:
+                    6px 11px;
+            }
+        }
+
+
+        /* =====================================================
+           HIDE ARROWS ON VERY SMALL PHONES
+        ===================================================== */
+
+        @media (max-width: 400px) {
+
+            .nav-button {
+
+                opacity: 0.5;
+            }
+        }
+
+
+        /* =====================================================
+           REDUCE MOTION
+        ===================================================== */
+
+        @media (prefers-reduced-motion: reduce) {
+
+            *,
+            *::before,
+            *::after {
+
+                animation-duration:
+                    0.01ms !important;
+
+                transition-duration:
+                    0.01ms !important;
+            }
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+
+    <!-- =====================================================
+         PAGE TITLE
+         ===================================================== -->
+
+    <h1>NFC Shared Gallery</h1>
+
+
+    <!-- =====================================================
+         PHOTO GRID
+         ===================================================== -->
+
+    <div
+        class="gallery-grid"
+        id="photoGrid">
+    </div>
+
+
+    <!-- =====================================================
+         LIGHTBOX
+         ===================================================== -->
+
+    <div
+        id="lightbox"
+        class="lightbox">
+
+
+        <!-- Photo counter -->
+
+        <div
+            id="photoCounter"
+            class="photo-counter">
+            1 / 1
+        </div>
+
+
+        <!-- Close -->
+
+        <button
+            id="closeButton"
+            class="close-button"
+            aria-label="Close gallery">
+            ×
+        </button>
+
+
+        <!-- Previous -->
+
+        <button
+            id="prevButton"
+            class="nav-button prev-button"
+            aria-label="Previous photo">
+            ‹
+        </button>
+
+
+        <!-- Image viewport -->
+
+        <div
+            id="lightboxViewport"
+            class="lightbox-viewport">
+
+            <img
+                id="lightboxImg"
+                src=""
+                alt="Enlarged view">
+
+        </div>
+
+
+        <!-- Next -->
+
+        <button
+            id="nextButton"
+            class="nav-button next-button"
+            aria-label="Next photo">
+            ›
+        </button>
+
+
+    </div>
+
+
+    <script>
+
+
+        /* =====================================================
+           GITHUB CONFIGURATION
+        ===================================================== */
+
+        const username =
+            "S7LEONNIE";
+
+        const repoName =
+            "testgallery";
+
+        const folderPath =
+            "images/client1";
+
+
+        /* =====================================================
+           ELEMENTS
+        ===================================================== */
+
+        const grid =
+            document.getElementById(
+                "photoGrid"
+            );
+
+        const lightbox =
+            document.getElementById(
+                "lightbox"
+            );
+
+        const lightboxImg =
+            document.getElementById(
+                "lightboxImg"
+            );
+
+        const viewport =
+            document.getElementById(
+                "lightboxViewport"
+            );
+
+        const prevButton =
+            document.getElementById(
+                "prevButton"
+            );
+
+        const nextButton =
+            document.getElementById(
+                "nextButton"
+            );
+
+        const closeButton =
+            document.getElementById(
+                "closeButton"
+            );
+
+        const photoCounter =
+            document.getElementById(
+                "photoCounter"
+            );
+
+
+        /* =====================================================
+           GITHUB API
+        ===================================================== */
+
+        const apiURL =
+            `https://api.github.com/repos/${username}/${repoName}/contents/${folderPath}`;
+
+
+        /* =====================================================
+           IMAGE FORMATS
+        ===================================================== */
+
+        const validExtensions = [
+
+            ".jpg",
+            ".jpeg",
+            ".png",
+            ".webp",
+            ".gif"
+
+        ];
+
+
+        /* =====================================================
+           PHOTO DATA
+        ===================================================== */
+
+        let photos = [];
+
+        let currentIndex = 0;
+
+        let isAnimating = false;
+
+
+        /* =====================================================
+           ZOOM STATE
+        ===================================================== */
+
+        let zoomLevel = 1;
+
+        const MIN_ZOOM = 1;
+
+        const MAX_ZOOM = 3;
+
+
+        /* =====================================================
+           TOUCH STATE
+        ===================================================== */
+
+        let touchStartX = 0;
+        let touchStartY = 0;
+
+        let touchCurrentX = 0;
+        let touchCurrentY = 0;
+
+        let isTouching = false;
+
+
+        /* =====================================================
+           DOUBLE TAP
+        ===================================================== */
+
+        let lastTapTime = 0;
+
+
+        /* =====================================================
+           LOAD PHOTOS
+        ===================================================== */
+
+        async function loadPhotos() {
+
+            try {
+
+                const response =
+                    await fetch(apiURL);
+
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        "Failed to load image folder contents."
+                    );
+                }
+
+
+                const files =
+                    await response.json();
+
+
+                photos =
+                    files.filter(file => {
+
+                        return validExtensions.some(
+                            ext =>
+                                file.name
+                                    .toLowerCase()
+                                    .endsWith(ext)
+                        );
+
+                    });
+
+
+                /* Create thumbnails */
+
+                photos.forEach(
+                    (file, index) => {
+
+                        const img =
+                            document.createElement(
+                                "img"
+                            );
+
+
+                        img.src =
+                            `${folderPath}/${file.name}`;
+
+
+                        img.alt =
+                            file.name;
+
+
+                        img.loading =
+                            "lazy";
+
+
+                        img.style.animationDelay =
+                            `${index * 0.04}s`;
+
+
+                        img.addEventListener(
+                            "click",
+                            () => {
+
+                                openLightbox(index);
+
+                            }
+                        );
+
+
+                        grid.appendChild(img);
+
+                    }
+                );
+
+
+            }
+
+            catch (error) {
+
+                console.error(error);
+
+
+                grid.innerHTML = `
+                    <p class="error">
+                        Oops! Couldn't load the gallery.
+                        Double-check your username
+                        and repo layout settings.
+                    </p>
+                `;
+
+            }
+
+        }
+
+
+        /* =====================================================
+           OPEN LIGHTBOX
+        ===================================================== */
+
+        function openLightbox(index) {
+
+            if (
+                index < 0 ||
+                index >= photos.length
+            ) {
+                return;
+            }
+
+
+            currentIndex =
+                index;
+
+
+            zoomLevel =
+                1;
+
+
+            lightboxImg.style.transform =
+                "translate3d(0,0,0) scale(1)";
+
+
+            updatePhoto();
+
+
+            lightbox.classList.add(
+                "active"
+            );
+
+
+            lightbox.classList.remove(
+                "opening"
+            );
+
+
+            /*
+             * Force the browser to register the
+             * class removal before adding it again.
+             */
+
+            void lightbox.offsetWidth;
+
+
+            lightbox.classList.add(
+                "opening"
+            );
+
+
+            document.body.style.overflow =
+                "hidden";
+
+
+            preloadNeighbours();
+
+        }
+
+
+        /* =====================================================
+           UPDATE PHOTO
+        ===================================================== */
+
+        function updatePhoto(
+            direction = null
+        ) {
+
+            const photo =
+                photos[currentIndex];
+
+
+            if (!photo) {
+                return;
+            }
+
+
+            const newSrc =
+                `${folderPath}/${photo.name}`;
+
+
+            lightboxImg.src =
+                newSrc;
+
+
+            lightboxImg.alt =
+                photo.name;
+
+
+            photoCounter.textContent =
+                `${currentIndex + 1} / ${photos.length}`;
+
+
+            updateNavigation();
+
+
+            zoomLevel =
+                1;
+
+
+            lightboxImg.style.transform =
+                "translate3d(0,0,0) scale(1)";
+
+
+            if (direction) {
+
+                lightboxImg.classList.remove(
+                    "slide-in-left",
+                    "slide-in-right"
+                );
+
+
+                void lightboxImg.offsetWidth;
+
+
+                if (direction === "next") {
+
+                    lightboxImg.classList.add(
+                        "slide-in-left"
+                    );
+
+                } else {
+
+                    lightboxImg.classList.add(
+                        "slide-in-right"
+                    );
+
+                }
+
+            }
+
+        }
+
+
+        /* =====================================================
+           NAVIGATION
+        ===================================================== */
+
+        function updateNavigation() {
+
+            /*
+             * Hide previous on first photo.
+             */
+
+            prevButton.style.display =
+                currentIndex === 0
+                    ? "none"
+                    : "flex";
+
+
+            /*
+             * Hide next on last photo.
+             */
+
+            nextButton.style.display =
+                currentIndex === photos.length - 1
+                    ? "none"
+                    : "flex";
+
+        }
+
+
+        /* =====================================================
+           NEXT PHOTO
+        ===================================================== */
+
+        function nextPhoto() {
+
+            if (
+                isAnimating ||
+                currentIndex >= photos.length - 1
+            ) {
+                return;
+            }
+
+
+            isAnimating =
+                true;
+
+
+            currentIndex++;
+
+
+            updatePhoto("next");
+
+
+            preloadNeighbours();
+
+
+            setTimeout(() => {
+
+                isAnimating =
+                    false;
+
+            }, 280);
+
+        }
+
+
+        /* =====================================================
+           PREVIOUS PHOTO
+        ===================================================== */
+
+        function previousPhoto() {
+
+            if (
+                isAnimating ||
+                currentIndex <= 0
+            ) {
+                return;
+            }
+
+
+            isAnimating =
+                true;
+
+
+            currentIndex--;
+
+
+            updatePhoto("previous");
+
+
+            preloadNeighbours();
+
+
+            setTimeout(() => {
+
+                isAnimating =
+                    false;
+
+            }, 280);
+
+        }
+
+
+        /* =====================================================
+           PRELOAD NEIGHBOURING PHOTOS
+        ===================================================== */
+
+        function preloadNeighbours() {
+
+            const indexes = [
+
+                currentIndex - 1,
+                currentIndex + 1
+
+            ];
+
+
+            indexes.forEach(index => {
+
+                if (
+                    index >= 0 &&
+                    index < photos.length
+                ) {
+
+                    const image =
+                        new Image();
+
+
+                    image.src =
+                        `${folderPath}/${photos[index].name}`;
+
+                }
+
+            });
+
+        }
+
+
+        /* =====================================================
+           CLOSE LIGHTBOX
+        ===================================================== */
+
+        function closeLightbox() {
+
+            lightbox.classList.remove(
+                "active"
+            );
+
+
+            lightbox.classList.remove(
+                "opening"
+            );
+
+
+            document.body.style.overflow =
+                "";
+
+
+            zoomLevel =
+                1;
+
+
+            lightboxImg.style.transform =
+                "translate3d(0,0,0) scale(1)";
+
+        }
+
+
+        /* =====================================================
+           BUTTON EVENTS
+        ===================================================== */
+
+        nextButton.addEventListener(
+            "click",
+            event => {
+
+                event.stopPropagation();
+
+                nextPhoto();
+
+            }
+        );
+
+
+        prevButton.addEventListener(
+            "click",
+            event => {
+
+                event.stopPropagation();
+
+                previousPhoto();
+
+            }
+        );
+
+
+        closeButton.addEventListener(
+            "click",
+            event => {
+
+                event.stopPropagation();
+
+                closeLightbox();
+
+            }
+        );
+
+
+        /* =====================================================
+           CLICK BACKGROUND TO CLOSE
+        ===================================================== */
+
+        lightbox.addEventListener(
+            "click",
+            event => {
+
+                if (
+                    event.target ===
+                    lightbox ||
+                    event.target ===
+                    viewport
+                ) {
+
+                    /*
+                     * Only close when the image
+                     * isn't zoomed.
+                     */
+
+                    if (zoomLevel === 1) {
+
+                        closeLightbox();
+
+                    }
+
+                }
+
+            }
+        );
+
+
+        /* =====================================================
+           KEYBOARD CONTROLS
+        ===================================================== */
+
+        document.addEventListener(
+            "keydown",
+            event => {
+
+                if (
+                    !lightbox.classList.contains(
+                        "active"
+                    )
+                ) {
+                    return;
+                }
+
+
+                if (
+                    event.key === "Escape"
+                ) {
+
+                    closeLightbox();
+
+                    return;
+
+                }
+
+
+                if (
+                    event.key === "ArrowRight"
+                ) {
+
+                    nextPhoto();
+
+                    return;
+
+                }
+
+
+                if (
+                    event.key === "ArrowLeft"
+                ) {
+
+                    previousPhoto();
+
+                    return;
+
+                }
+
+            }
+        );
+
+
+        /* =====================================================
+           DOUBLE CLICK / DOUBLE TAP ZOOM
+        ===================================================== */
+
+        lightboxImg.addEventListener(
+            "dblclick",
+            event => {
+
+                event.preventDefault();
+
+                toggleZoom();
+
+            }
+        );
+
+
+        function toggleZoom() {
+
+            if (
+                zoomLevel === 1
+            ) {
+
+                zoomLevel =
+                    2;
+
+            } else {
+
+                zoomLevel =
+                    1;
+
+            }
+
+
+            lightboxImg.style.transform =
+                `translate3d(0,0,0) scale(${zoomLevel})`;
+
+        }
+
+
+        /* =====================================================
+           MOUSE WHEEL ZOOM
+        ===================================================== */
+
+        lightboxImg.addEventListener(
+            "wheel",
+            event => {
+
+                event.preventDefault();
+
+
+                const direction =
+                    event.deltaY < 0
+                        ? 0.25
+                        : -0.25;
+
+
+                zoomLevel =
+                    Math.min(
+                        MAX_ZOOM,
+                        Math.max(
+                            MIN_ZOOM,
+                            zoomLevel + direction
+                        )
+                    );
+
+
+                lightboxImg.style.transform =
+                    `translate3d(0,0,0) scale(${zoomLevel})`;
+
+            },
+            {
+                passive: false
+            }
+        );
+
+
+        /* =====================================================
+           TOUCH START
+        ===================================================== */
+
+        viewport.addEventListener(
+            "touchstart",
+            event => {
+
+                if (
+                    event.touches.length !== 1
+                ) {
+                    return;
+                }
+
+
+                const touch =
+                    event.touches[0];
+
+
+                touchStartX =
+                    touch.clientX;
+
+
+                touchStartY =
+                    touch.clientY;
+
+
+                touchCurrentX =
+                    touch.clientX;
+
+
+                touchCurrentY =
+                    touch.clientY;
+
+
+                isTouching =
+                    true;
+
+            },
+            {
+                passive: true
+            }
+        );
+
+
+        /* =====================================================
+           TOUCH MOVE
+        ===================================================== */
+
+        viewport.addEventListener(
+            "touchmove",
+            event => {
+
+                if (
+                    !isTouching ||
+                    event.touches.length !== 1
+                ) {
+                    return;
+                }
+
+
+                const touch =
+                    event.touches[0];
+
+
+                touchCurrentX =
+                    touch.clientX;
+
+
+                touchCurrentY =
+                    touch.clientY;
+
+
+                /*
+                 * Don't interfere with zoomed images.
+                 */
+
+                if (
+                    zoomLevel > 1
+                ) {
+                    return;
+                }
+
+
+                const deltaX =
+                    touchCurrentX -
+                    touchStartX;
+
+
+                const deltaY =
+                    touchCurrentY -
+                    touchStartY;
+
+
+                /*
+                 * If primarily horizontal,
+                 * slightly move the image with
+                 * the finger.
+                 */
+
+                if (
+                    Math.abs(deltaX) >
+                    Math.abs(deltaY)
+                ) {
+
+                    lightboxImg.style.transform =
+                        `translate3d(${deltaX * 0.35}px, 0, 0)`;
+
+                }
+
+            },
+            {
+                passive: true
+            }
+        );
+
+
+        /* =====================================================
+           TOUCH END
+        ===================================================== */
+
+        viewport.addEventListener(
+            "touchend",
+            () => {
+
+                if (!isTouching) {
+                    return;
+                }
+
+
+                isTouching =
+                    false;
+
+
+                const deltaX =
+                    touchCurrentX -
+                    touchStartX;
+
+
+                const deltaY =
+                    touchCurrentY -
+                    touchStartY;
+
+
+                /*
+                 * Swipe threshold.
+                 */
+
+                const SWIPE_DISTANCE =
+                    70;
+
+
+                /* ---------------------------------------------
+                   SWIPE DOWN → CLOSE
+                --------------------------------------------- */
+
+                if (
+                    Math.abs(deltaY) >
+                    SWIPE_DISTANCE &&
+                    Math.abs(deltaY) >
+                    Math.abs(deltaX) * 1.3 &&
+                    deltaY > 0
+                ) {
+
+                    closeLightbox();
+
+                    return;
+
+                }
+
+
+                /* ---------------------------------------------
+                   SWIPE LEFT → NEXT
+                --------------------------------------------- */
+
+                if (
+                    Math.abs(deltaX) >
+                    SWIPE_DISTANCE &&
+                    Math.abs(deltaX) >
+                    Math.abs(deltaY)
+                ) {
+
+                    if (
+                        deltaX < 0
+                    ) {
+
+                        nextPhoto();
+
+                    } else {
+
+                        previousPhoto();
+
+                    }
+
+
+                    return;
+
+                }
+
+
+                /*
+                 * Not enough movement.
+                 * Return image to centre.
+                 */
+
+                lightboxImg.style.transform =
+                    `translate3d(0,0,0) scale(${zoomLevel})`;
+
+            }
+        );
+
+
+        /* =====================================================
+           SIMPLE DOUBLE-TAP DETECTION
+        ===================================================== */
+
+        viewport.addEventListener(
+            "touchend",
+            event => {
+
+                const now =
+                    Date.now();
+
+
+                const timeSinceLastTap =
+                    now - lastTapTime;
+
+
+                if (
+                    timeSinceLastTap < 300 &&
+                    timeSinceLastTap > 0
+                ) {
+
+                    event.preventDefault();
+
+                    toggleZoom();
+
+                }
+
+
+                lastTapTime =
+                    now;
+
+            }
+        );
+
+
+        /* =====================================================
+           START
+        ===================================================== */
+
+        loadPhotos();
+
+    </script>
+
+</body>
+</html>
